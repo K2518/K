@@ -458,14 +458,31 @@
       .hero-actions a:first-child,.btn-primary{min-height:44px}
     }
 
+  
+    /* Full-width supplied JAVDAN SAZEH header banner */
+    header.site-banner{
+      display:block;width:100%;height:auto;max-height:none;padding:0;margin:0;
+      position:relative;top:0;overflow:hidden;border:0;border-radius:0;
+      background:#cfe8d6;box-shadow:0 6px 22px rgba(39,78,52,.12);
+      text-align:initial;line-height:0;z-index:100;
+    }
+    header.site-banner:before{display:none!important;content:none!important}
+    header.site-banner img{
+      display:block;width:100%;height:auto;aspect-ratio:768 / 205;
+      object-fit:cover;object-position:center;
+    }
+    @media(max-width:600px){
+      header.site-banner{position:relative}
+      header.site-banner img{width:100%;height:auto;aspect-ratio:768 / 205;object-fit:contain}
+    }
+
   </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<header>
-  <h1>جاودان سازه | مدیریت هوشمند پروژه‌های عمرانی</h1>
-  <p>کنترل فنی، پایش اجرا و مدیریت یکپارچه پروژه‌ها</p>
+<header class="site-banner" aria-label="بنر اصلی جاودان سازه">
+  <img src="assets/javdan-header.jpg" alt="چک‌لیست جاودان سازه؛ چک‌لیست مدیریت پروژه">
 </header>
 
 
