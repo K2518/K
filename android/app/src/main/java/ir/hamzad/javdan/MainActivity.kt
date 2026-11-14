@@ -19,7 +19,7 @@ class MainActivity : Activity() {
     private lateinit var webView: WebView
     private var fileCallback: ValueCallback<Array<Uri>>? = null
     private val fileRequestCode = 4107
-    private val appUrl = "https://k2518.github.io/K/"
+    private val appUrl = "https://k2518.github.io/K/auth.html"
 
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
