@@ -219,13 +219,45 @@
     .pm-hint{font-size:.75rem;color:var(--text-secondary);margin:.45rem 0}
     .pm-empty{text-align:center;color:var(--text-secondary);padding:1rem}
 
+  
+    /* JAVDAN SAZEH premium pastel-green / silver redesign */
+    :root{
+      --void:#F2F8F3;--deep:#FFFFFF;--surface:#E7F1E9;--paper:#FFFFFF;
+      --border:#D5E1D9;--border-hover:#B8CCBF;
+      --text-primary:#263A30;--text-secondary:#62786B;--text-muted:#82958A;
+      --signal:#78A88A;--signal-hover:#5F9273;--signal-glow:rgba(120,168,138,.2);
+      --success:#5E9D72;--warning:#C59B57;--error:#C96D70;
+      --radius:17px;--radius-sm:11px;--shadow:0 8px 26px rgba(55,91,67,.09);
+    }
+    body{background:radial-gradient(ellipse at 12% 0%,#e2f0e5 0%,transparent 38%),linear-gradient(145deg,#f7fbf7,#edf5ef 65%,#f8faf8);color:var(--text-primary)}
+    header{background:linear-gradient(115deg,#244b36 0%,#376b4b 55%,#759b83 100%);color:#fff;border:0;text-align:right;padding:1rem max(1rem,calc((100% - 1000px)/2));box-shadow:0 10px 30px rgba(39,78,52,.18)}
+    header h1{font-size:1.2rem;letter-spacing:.2px;color:#fff}
+    header p{color:#e0eee3;font-size:.76rem}
+    header:before{content:"JAVDAN SAZEH";display:block;font-size:.67rem;letter-spacing:3px;font-weight:800;color:#d7e7dc;margin-bottom:.2rem;direction:ltr;text-align:right}
+    .container{max-width:1080px;margin:1.15rem auto;padding:0 1rem}
+    .control-card,.card,.progress-card,.logbook-section,.pm-panel,.pm-card{border:1px solid rgba(190,211,196,.8)!important;border-radius:17px!important;box-shadow:0 7px 24px rgba(53,91,65,.07)!important;background:rgba(255,255,255,.94)!important}
+    .control-card{padding:1rem!important;position:relative;overflow:hidden}
+    .control-card:before{content:"";position:absolute;right:0;top:0;width:4px;height:100%;background:linear-gradient(#8fbea0,#d6e6da)}
+    label{font-weight:650;color:#587363}
+    input,select,textarea{border:1px solid #d5e3d8!important;border-radius:11px!important;background:#fbfefb!important;color:#263a30!important;min-height:42px}
+    input:focus,select:focus,textarea:focus{border-color:#79a98a!important;box-shadow:0 0 0 3px rgba(121,169,138,.14)!important}
+    .btn-primary,button.btn-primary{background:linear-gradient(135deg,#5e9671,#82b091)!important;color:#fff!important;border:0!important;box-shadow:0 5px 14px rgba(87,143,104,.18)}
+    .btn-sm,.btn-ghost{border-radius:10px!important}
+    .phase-header,.sub-header{border-radius:13px!important}
+    .progress-grid{gap:.8rem}
+    .progress-card{padding:1rem!important}
+    .logbook-section{padding:1rem!important}
+    .modal{border:1px solid #d7e5da!important;border-radius:20px!important;box-shadow:0 18px 55px rgba(31,62,42,.2)!important}
+    footer{color:#789082!important}
+    @media(max-width:600px){header{padding:calc(.8rem + var(--safe-top)) 1rem .9rem}header h1{font-size:1.05rem}.container{margin:.8rem auto;padding:0 .75rem}.controls{gap:.7rem}.control-card{padding:.8rem!important}}
+
   </style>
 </head>
 <body>
 
 <header>
-  <h1>🔹 چک‌لیست فنی و اجرایی | جاودان</h1>
-  <p>سامانه یکپارچه کنترل، پایش و مدیریت پروژه‌های عمرانی · V7.0</p>
+  <h1>جاودان سازه | مدیریت هوشمند پروژه‌های عمرانی</h1>
+  <p>کنترل فنی، پایش اجرا و مدیریت یکپارچه پروژه‌ها</p>
 </header>
 
 <div class="container">
