@@ -252,6 +252,7 @@
     @media(max-width:600px){header{padding:calc(.8rem + var(--safe-top)) 1rem .9rem}header h1{font-size:1.05rem}.container{margin:.8rem auto;padding:0 .75rem}.controls{gap:.7rem}.control-card{padding:.8rem!important}}
 
   </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -5048,6 +5049,15 @@
   document.getElementById('pm-import-file').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||typeof imported!=='object'||!imported.pm||!Array.isArray(imported.pm.tasks))throw new Error('ساختار فایل پشتیبان معتبر نیست');if(!confirm('اطلاعات فعلی با نسخه پشتیبان جایگزین شود؟'))return;state=imported;state.pm=Object.assign({tasks:[],risks:[],milestones:[],reports:[]},state.pm);saveState();alert('نسخه پشتیبان بازیابی شد. صفحه را دوباره بارگذاری کنید.');}catch(err){alert('بازیابی انجام نشد: '+err.message);}finally{e.target.value='';}});
   pmInitFields();pmRender();
 
+</script>
+<script>
+(async()=>{try{
+ const sb=window.supabase.createClient('https://eqpmqpsbaragfuvifrwl.supabase.co','sb_publishable_lvwJF3To0AiSOo9KzFQYBA_KSMyItli');
+ const {data:{user}}=await sb.auth.getUser();
+ if(!user){location.replace('auth.html');return;}
+ const {data:p,error}=await sb.from('profiles').select('is_active').eq('user_id',user.id).maybeSingle();
+ if(error||!p||!p.is_active){location.replace('auth.html');return;}
+}catch(e){location.replace('auth.html');}})();
 </script>
 </body>
 </html>
