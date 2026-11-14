@@ -251,6 +251,48 @@
     footer{color:#789082!important}
     @media(max-width:600px){header{padding:calc(.8rem + var(--safe-top)) 1rem .9rem}header h1{font-size:1.05rem}.container{margin:.8rem auto;padding:0 .75rem}.controls{gap:.7rem}.control-card{padding:.8rem!important}}
 
+
+    /* JAVDAN SAZEH — redesigned application shell */
+    body{min-height:100vh;background:#f3f8f4!important}
+    body:not(.auth-ready){visibility:hidden}
+    .app-hero{position:relative;isolation:isolate;overflow:hidden;margin:1.1rem 0 1rem;padding:1.35rem 1.4rem;border-radius:24px;background:linear-gradient(120deg,#173d2b 0%,#326348 58%,#8eb49a 100%);color:#fff;box-shadow:0 16px 38px rgba(34,82,51,.18)}
+    .app-hero:before,.app-hero:after{content:"";position:absolute;border:1px solid rgba(255,255,255,.14);border-radius:50%;z-index:-1}
+    .app-hero:before{width:240px;height:240px;left:-75px;top:-145px}
+    .app-hero:after{width:155px;height:155px;left:65px;bottom:-115px}
+    .hero-topline{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .hero-brand{font-size:.72rem;letter-spacing:3px;color:#d9eadc;font-weight:800;direction:ltr}
+    .hero-role{font-size:.72rem;border:1px solid #ffffff45;background:#ffffff18;padding:5px 11px;border-radius:30px;color:#f2f8f3}
+    .app-hero h2{font-size:1.42rem;margin:.6rem 0 .15rem;color:#fff}
+    .app-hero p{font-size:.82rem;color:#e2efe5;margin:0;max-width:650px}
+    .hero-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:1rem}
+    .hero-actions a{display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:#244b35;background:#f7fbf7;border:1px solid #ffffff70;border-radius:11px;padding:8px 13px;font-size:.78rem;font-weight:750}
+    .hero-actions a.secondary{color:#fff;background:#ffffff18;border-color:#ffffff45}
+    .quick-title{font-size:.86rem;font-weight:800;margin:1.15rem .15rem .65rem;color:#496b55}
+    .quick-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-bottom:1.1rem}
+    .quick-card{min-height:112px;display:flex;flex-direction:column;justify-content:space-between;text-decoration:none;color:#294b36;background:linear-gradient(145deg,#fff,#f6faf6);border:1px solid #dce9df;border-radius:17px;padding:13px;box-shadow:0 7px 20px rgba(54,91,64,.055);transition:transform .2s,box-shadow .2s}
+    .quick-card:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(54,91,64,.11)}
+    .quick-icon{width:36px;height:36px;display:grid;place-items:center;border-radius:12px;background:#e6f1e8;color:#568366;font-size:19px}
+    .quick-card strong{font-size:.82rem}.quick-card small{font-size:.68rem;color:#819487}
+    .section-ribbon{display:flex;align-items:center;gap:9px;margin:1.15rem 0 .7rem;color:#315b3e;font-weight:800;font-size:.95rem}
+    .section-ribbon:before{content:"";width:5px;height:21px;border-radius:8px;background:linear-gradient(#83b596,#c4dcca)}
+    .controls{gap:.75rem}
+    .control-card{border-radius:16px!important}
+    .progress-card{border-radius:16px!important}
+    .pm-shell{background:rgba(255,255,255,.88)!important;border-color:#d9e7dc!important;border-radius:22px!important;padding:1.1rem!important}
+    .pm-heading h2{color:#315a3e}
+    .pm-kpi{background:linear-gradient(145deg,#fff,#f2f8f3)!important;border:1px solid #dce9df!important;border-radius:15px!important}
+    .pm-kpi strong{color:#4f8762}
+    .pm-tab{border-radius:11px!important}
+    .pm-tab.active{background:linear-gradient(120deg,#5f9671,#83b192)!important;border-color:#78a789!important}
+    .phase{border-radius:16px!important;border-color:#dce8df!important;box-shadow:0 5px 18px rgba(54,91,64,.045)}
+    .phase-header{background:linear-gradient(100deg,#e8f2ea,#f7faf7)!important;padding:.95rem 1rem}
+    .phase-header h2{color:#365e43}
+    .sub-accordion{border-radius:12px!important;border-color:#e0eae2!important}
+    .sub-header{background:#f0f6f1!important}
+    #update-panel{border-radius:17px!important}
+    @media(max-width:700px){.quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.app-hero{padding:1.1rem;border-radius:19px}.app-hero h2{font-size:1.18rem}.quick-card{min-height:100px}}
+    @media(min-width:900px){.container{max-width:1160px}.app-hero{padding:1.7rem 2rem}.quick-grid{gap:14px}}
+
   </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -262,6 +304,22 @@
 </header>
 
 <div class="container">
+
+  <section class="app-hero" aria-label="داشبورد جاودان سازه">
+    <div class="hero-topline"><span class="hero-brand">JAVDAN SAZEH</span><span class="hero-role" id="hero-role">فضای کاری پروژه</span></div>
+    <h2 id="hero-greeting">مدیریت هوشمند پروژه‌های عمرانی</h2>
+    <p id="hero-subtitle">تمام اطلاعات فنی، اجرایی و مدیریتی پروژه را در یک فضای منظم و یکپارچه کنترل کنید.</p>
+    <div class="hero-actions"><a href="#pm-workspace">ورود به مرکز مدیریت پروژه ←</a><a class="secondary" href="#checklist-area">مشاهده چک‌لیست فنی</a></div>
+  </section>
+  <div class="quick-title">دسترسی سریع به بخش‌های نرم‌افزار</div>
+  <nav class="quick-grid" aria-label="دسترسی سریع">
+    <a class="quick-card" href="#pm-workspace"><span class="quick-icon">▦</span><strong>داشبورد پروژه</strong><small>شاخص‌ها و وضعیت اجرا</small></a>
+    <a class="quick-card" href="#checklist-area"><span class="quick-icon">✓</span><strong>چک‌لیست فنی</strong><small>کنترل مراحل و آیتم‌ها</small></a>
+    <a class="quick-card" href="#daily-area"><span class="quick-icon">▤</span><strong>گزارش و دفترچه</strong><small>ثبت روزانه و مستندات</small></a>
+    <a class="quick-card" href="#update-panel"><span class="quick-icon">↻</span><strong>منابع و به‌روزرسانی</strong><small>اتصال و بررسی منابع</small></a>
+  </nav>
+
+  <div class="section-ribbon">اطلاعات پایه و مشخصات پروژه</div>
   <div class="controls">
     <div class="control-card">
       <label>نام پروژه</label>
@@ -433,6 +491,7 @@
   <div class="progress-grid" id="progress-container"></div>
   <main id="checklist-container"></main>
 
+  <div id="daily-area" class="section-ribbon">دفترچه و گزارش‌های روزانه</div>
   <section class="logbook-section" id="notebook-section">
     <div class="log-header"><h2>📒 دفترچه فعالیت‌ها</h2><button class="btn-sm" onclick="toggleNotebook()">بستن</button></div>
     <div class="notebook-input">
@@ -5055,8 +5114,13 @@
  const sb=window.supabase.createClient('https://eqpmqpsbaragfuvifrwl.supabase.co','sb_publishable_lvwJF3To0AiSOo9KzFQYBA_KSMyItli');
  const {data:{user}}=await sb.auth.getUser();
  if(!user){location.replace('auth.html');return;}
- const {data:p,error}=await sb.from('profiles').select('is_active').eq('user_id',user.id).maybeSingle();
+ const {data:p,error}=await sb.from('profiles').select('is_active,role,full_name,email').eq('user_id',user.id).maybeSingle();
  if(error||!p||!p.is_active){location.replace('auth.html');return;}
+ const roleNames={super_admin:'مدیر ارشد سامانه',project_manager:'مدیر پروژه',user:'کاربر سامانه'};
+ const roleEl=document.getElementById('hero-role');if(roleEl)roleEl.textContent=roleNames[p.role]||'عضو جاودان سازه';
+ const greeting=document.getElementById('hero-greeting');if(greeting)greeting.textContent='خوش آمدید'+(p.full_name?'، '+p.full_name:'');
+ const subtitle=document.getElementById('hero-subtitle');if(subtitle)subtitle.textContent='فضای کاری شما آماده است؛ پروژه‌ها، کنترل فنی و گزارش‌های اجرایی را از همین‌جا مدیریت کنید.';
+ document.body.classList.add('auth-ready');
 }catch(e){location.replace('auth.html');}})();
 </script>
 </body>
