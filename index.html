@@ -5018,10 +5018,12 @@
       let phaseTotal = 0, phaseDone = 0;
       const walk = (items, parentKey) => (items || []).forEach((item, index) => {
         if (typeof item === 'string') {
+          if (!itemAllowed(item, currentProjectType())) return;
           phaseTotal++;
           const checkId = 'chk-' + hashId(parentKey + '/' + index + '/' + item);
           if (state.checks[checkId]) phaseDone++;
         } else if (item && typeof item === 'object' && Array.isArray(item.items)) {
+          if (!sectionAllowed(item.header || '', currentProjectType())) return;
           walk(item.items, parentKey + '/' + index);
         }
       });
