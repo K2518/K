@@ -324,6 +324,27 @@
     @media(max-width:900px){.app-sidebar{width:205px}body>header,body>.container{margin-right:205px!important}.folder-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media(max-width:650px){.app-sidebar{display:none}body>header,body>.container{margin-right:0!important}.mobile-app-nav{display:flex;position:sticky;top:0;z-index:35;justify-content:space-around;gap:4px;padding:8px;background:#fff;border-bottom:1px solid #dce9df;box-shadow:0 5px 15px #244b3510}.mobile-app-nav a{font-size:.68rem;color:#41694d;text-decoration:none;padding:7px 5px;border-radius:9px}.folder-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.app-folder{min-height:104px;padding:11px}.folder-heading{align-items:start;flex-direction:column}body>.container{padding:0 12px!important}}
 
+
+    /* Dashboard visual layer + dedicated technical folder */
+    .dashboard-visuals{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;margin:14px 0 20px}
+    .visual-card{position:relative;overflow:hidden;background:linear-gradient(145deg,#fff,#f1f8f2);border:1px solid #d8e8dc;border-radius:20px;padding:17px;box-shadow:0 9px 25px rgba(39,83,52,.07)}
+    .visual-card h3{font-size:.9rem;color:#315e40;margin-bottom:5px}
+    .visual-card p{font-size:.72rem;color:#829589}
+    .site-illustration{width:100%;height:170px;display:block;margin-top:4px}
+    .chart-bars{display:flex;align-items:end;gap:12px;height:130px;padding:12px 8px 0;border-bottom:1px solid #dce9df}
+    .chart-col{height:100%;flex:1;display:flex;flex-direction:column;justify-content:end;align-items:center;gap:7px}
+    .chart-col i{display:block;width:min(34px,70%);height:var(--h);min-height:7px;border-radius:9px 9px 3px 3px;background:linear-gradient(180deg,#9cc9a7,#4f8962);box-shadow:0 4px 10px #548a6320}
+    .chart-col span{font-size:.65rem;color:#718879;white-space:nowrap}
+    .chart-foot{display:flex;justify-content:space-between;margin-top:10px;font-size:.7rem;color:#829589}
+    .module-view{display:none;animation:fadeSlide .25s ease}
+    .module-view.active{display:block}
+    .module-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0;padding:15px 17px;border-radius:17px;background:linear-gradient(110deg,#e4f1e7,#fff);border:1px solid #d5e6d9}
+    .module-top h2{font-size:1rem;color:#28583b}.module-top p{font-size:.72rem;color:#829589;margin-top:3px}
+    .module-back{width:auto;text-decoration:none;background:#fff;border:1px solid #cfe1d3;color:#416b4c;padding:8px 12px;border-radius:10px;font-size:.75rem;font-weight:700}
+    .app-folder.technical-folder{background:linear-gradient(145deg,#e6f3e9,#fff);border:1px solid #9fc8a8}
+    .app-folder.technical-folder .folder-icon{background:#cfe6d4}
+    @media(max-width:700px){.dashboard-visuals{grid-template-columns:1fr}.site-illustration{height:145px}.module-top{align-items:flex-start;flex-direction:column}}
+
   </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -341,7 +362,7 @@
  <nav class="sidebar-links">
   <a class="active" href="#app-home"><span class="side-ico">▦</span>داشبورد اصلی</a>
   <a href="#pm-workspace"><span class="side-ico">▤</span>مدیریت پروژه</a>
-  <a href="#checklist-area"><span class="side-ico">✓</span>چک‌لیست فنی</a>
+  <a href="#technical-folder"><span class="side-ico">✓</span>پایش فنی و چک‌لیست</a>
   <a href="#daily-area"><span class="side-ico">▧</span>گزارش‌های روزانه</a>
   <a href="#update-panel"><span class="side-ico">⌘</span>منابع و آیین‌نامه‌ها</a>
  </nav>
@@ -352,7 +373,7 @@
  </nav>
  <div class="sidebar-footer"><strong>JAVDAN WORKSPACE</strong><br/>سامانه هوشمند کنترل پروژه‌های عمرانی</div>
 </aside>
-<nav class="mobile-app-nav" aria-label="میانبرها"><a href="#app-home">خانه</a><a href="#pm-workspace">پروژه</a><a href="#checklist-area">چک‌لیست</a><a href="#daily-area">گزارش</a><a href="#update-panel">منابع</a></nav>
+<nav class="mobile-app-nav" aria-label="میانبرها"><a href="#app-home">خانه</a><a href="#pm-workspace">پروژه</a><a href="#technical-folder">پایش فنی</a><a href="#daily-area">گزارش</a><a href="#update-panel">منابع</a></nav>
 
 <div class="container">
 
@@ -362,10 +383,42 @@
     <p id="hero-subtitle">تمام اطلاعات فنی، اجرایی و مدیریتی پروژه را در یک فضای منظم و یکپارچه کنترل کنید.</p>
     <div class="hero-actions"><a href="#pm-workspace">ورود به مرکز مدیریت پروژه ←</a><a class="secondary" href="#checklist-area">مشاهده چک‌لیست فنی</a></div>
   </section>
+  <section class="dashboard-visuals" aria-label="نمای تصویری داشبورد">
+    <article class="visual-card">
+      <h3>نمای کارگاه و پیشرفت پروژه</h3>
+      <p>نمای شماتیک وضعیت عملیات عمرانی</p>
+      <svg class="site-illustration" viewBox="0 0 620 190" role="img" aria-label="تصویر شماتیک کارگاه ساختمانی">
+        <defs><linearGradient id="towerGrad" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b7d8bd"/><stop offset="1" stop-color="#5f9870"/></linearGradient></defs>
+        <circle cx="520" cy="34" r="22" fill="#e8d9a8"/>
+        <path d="M0 160 Q130 145 250 158 T620 150 V190 H0Z" fill="#e5f0e7"/>
+        <path d="M95 160V58H260V160Z" fill="url(#towerGrad)" stroke="#4e805d" stroke-width="2"/>
+        <path d="M115 77H240M115 103H240M115 129H240M155 58V160M205 58V160" stroke="#f7fbf7" stroke-width="5" opacity=".9"/>
+        <path d="M80 58H276M105 43H250" stroke="#426f50" stroke-width="5" stroke-linecap="round"/>
+        <path d="M190 43V18H365M340 18V43M355 18L380 40" fill="none" stroke="#648e70" stroke-width="5" stroke-linecap="round"/>
+        <path d="M352 18V88" stroke="#648e70" stroke-width="3"/><path d="M343 88H361L352 99Z" fill="#648e70"/>
+        <path d="M300 160V92H410V160" fill="#d8eadc" stroke="#7aa887" stroke-width="2"/>
+        <path d="M315 111H395M315 132H395" stroke="#fff" stroke-width="7"/>
+        <path d="M0 166H620" stroke="#9dbba4" stroke-width="3"/>
+        <path d="M430 160L460 125L490 160M465 160L495 135L520 160" fill="#c6dccb" stroke="#8caf96" stroke-width="2"/>
+        <g fill="#6c9d78"><circle cx="42" cy="144" r="11"/><circle cx="53" cy="139" r="14"/><circle cx="568" cy="143" r="12"/><circle cx="581" cy="137" r="16"/></g>
+      </svg>
+    </article>
+    <article class="visual-card">
+      <h3>شاخص‌های تصویری پیشرفت</h3>
+      <p>نمودار نمونه؛ با ثبت داده‌های واقعی پروژه تکمیل می‌شود.</p>
+      <div class="chart-bars" aria-label="نمودار نمونه مراحل پروژه">
+        <div class="chart-col"><i style="--h:34%"></i><span>طراحی</span></div>
+        <div class="chart-col"><i style="--h:58%"></i><span>فونداسیون</span></div>
+        <div class="chart-col"><i style="--h:82%"></i><span>اسکلت</span></div>
+        <div class="chart-col"><i style="--h:47%"></i><span>تأسیسات</span></div>
+        <div class="chart-col"><i style="--h:22%"></i><span>نازک‌کاری</span></div>
+      </div>
+      <div class="chart-foot"><span>نمای تحلیلی مراحل</span><strong>JAVDAN SAZEH</strong></div>
+    </article>
+  </section>
   <div class="quick-title">دسترسی سریع به بخش‌های نرم‌افزار</div>
   <nav class="quick-grid" aria-label="دسترسی سریع">
     <a class="quick-card" href="#pm-workspace"><span class="quick-icon">▦</span><strong>داشبورد پروژه</strong><small>شاخص‌ها و وضعیت اجرا</small></a>
-    <a class="quick-card" href="#checklist-area"><span class="quick-icon">✓</span><strong>چک‌لیست فنی</strong><small>کنترل مراحل و آیتم‌ها</small></a>
     <a class="quick-card" href="#daily-area"><span class="quick-icon">▤</span><strong>گزارش و دفترچه</strong><small>ثبت روزانه و مستندات</small></a>
     <a class="quick-card" href="#update-panel"><span class="quick-icon">↻</span><strong>منابع و به‌روزرسانی</strong><small>اتصال و بررسی منابع</small></a>
   </nav>
@@ -375,7 +428,7 @@
    <div class="folder-heading"><div><h2>فضای کاری و پوشه‌های پروژه</h2><p>بخش‌های نرم‌افزار در دسته‌بندی‌های مستقل و دسترسی سریع</p></div></div>
    <div class="folder-grid">
     <a class="app-folder" href="#pm-workspace"><span class="folder-top"><span class="folder-icon">▦</span><span class="folder-count">مدیریت</span></span><strong>پروژه‌ها و مدیریت اجرایی</strong><small>داشبورد، برنامه، بودجه، ریسک و نقاط عطف</small></a>
-    <a class="app-folder" href="#checklist-area"><span class="folder-top"><span class="folder-icon">✓</span><span class="folder-count">کنترل فنی</span></span><strong>چک‌لیست‌ها و کنترل کیفیت</strong><small>مراحل اجرا، آیتم‌ها و شواهد فنی</small></a>
+    <a class="app-folder technical-folder" href="#technical-folder"><span class="folder-top"><span class="folder-icon">✓</span><span class="folder-count">پوشه تخصصی</span></span><strong>پایش فنی و چک‌لیست اجرایی</strong><small>کنترل مراحل اجرا، کیفیت، آیتم‌ها و شواهد فنی</small></a>
     <a class="app-folder" href="#daily-area"><span class="folder-top"><span class="folder-icon">▤</span><span class="folder-count">مستندات</span></span><strong>گزارش‌ها و دفترچه کارگاه</strong><small>گزارش روزانه، یادداشت‌ها و پیگیری‌ها</small></a>
     <a class="app-folder" href="#update-panel"><span class="folder-top"><span class="folder-icon">⌘</span><span class="folder-count">منابع</span></span><strong>آیین‌نامه‌ها و منابع فنی</strong><small>مرکز دریافت و بررسی به‌روزرسانی‌ها</small></a>
     <a class="app-folder" href="#pm-pane-backup"><span class="folder-top"><span class="folder-icon">▣</span><span class="folder-count">بایگانی</span></span><strong>پشتیبان و خروجی اطلاعات</strong><small>دریافت و بازیابی نسخه پشتیبان پروژه</small></a>
@@ -551,10 +604,13 @@
     </div>
   </section>
 
+  <section class="module-view" id="technical-folder">
+    <div class="module-top"><div><h2>پوشه پایش فنی و چک‌لیست اجرایی</h2><p>تمام کنترل‌های فنی، مراحل اجرایی و شواهد پروژه در این بخش نگهداری می‌شود.</p></div><a class="module-back" href="#app-home">← بازگشت به داشبورد</a></div>
   <div class="section-ribbon" id="checklist-area">پایش فنی و چک‌لیست اجرایی</div>
   <div class="filter-hint" id="filter-hint"></div>
   <div class="progress-grid" id="progress-container"></div>
   <main id="checklist-container"></main>
+  </section>
 
   <div id="daily-area" class="section-ribbon">دفترچه و گزارش‌های روزانه</div>
   <section class="logbook-section" id="notebook-section">
@@ -5130,6 +5186,16 @@
     if (!document.hidden) checkForUpdates(false);
   });
 
+  function setWorkspaceRoute(){
+    const technical = location.hash === '#technical-folder' || location.hash === '#checklist-area';
+    const folder = document.getElementById('technical-folder');
+    if(folder) folder.classList.toggle('active', technical);
+    document.querySelectorAll('.app-sidebar a').forEach(a=>a.classList.toggle('active', technical ? a.getAttribute('href')==='#technical-folder' : a.getAttribute('href')==='#app-home'));
+    if(technical) setTimeout(()=>folder.scrollIntoView({behavior:'smooth',block:'start'}),30);
+    else if(location.hash==='#app-home' || !location.hash) window.scrollTo({top:0,behavior:'smooth'});
+  }
+  window.addEventListener('hashchange',setWorkspaceRoute);
+  setWorkspaceRoute();
   initTheme(); renderProgress(); renderChecklist(); updateProgressBars(); renderNotebook();
 
   // JAVDAN V8.0 - Online pastel workspace
