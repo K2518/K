@@ -293,6 +293,37 @@
     @media(max-width:700px){.quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.app-hero{padding:1.1rem;border-radius:19px}.app-hero h2{font-size:1.18rem}.quick-card{min-height:100px}}
     @media(min-width:900px){.container{max-width:1160px}.app-hero{padding:1.7rem 2rem}.quick-grid{gap:14px}}
 
+  
+    /* JAVDAN professional app workspace */
+    body{direction:rtl}
+    .app-sidebar{position:fixed;right:0;top:0;bottom:0;width:248px;z-index:40;padding:22px 16px;background:linear-gradient(180deg,#17452f,#286344 68%,#397451);color:#f7fff8;display:flex;flex-direction:column;gap:18px;box-shadow:-12px 0 32px rgba(23,69,47,.12)}
+    .sidebar-brand{display:flex;align-items:center;gap:11px;padding:8px 7px 18px;border-bottom:1px solid #ffffff26}
+    .sidebar-mark{width:43px;height:43px;border-radius:14px;background:linear-gradient(145deg,#e8f5e9,#a8d0b2);display:grid;place-items:center;color:#24573a;font-weight:900;font-size:20px;box-shadow:0 5px 15px #102f2038}
+    .sidebar-brand strong{display:block;font-size:1rem}.sidebar-brand small{display:block;color:#c9e1cf;font-size:.65rem;letter-spacing:2px}
+    .sidebar-caption{font-size:.67rem;color:#b8d5c0;font-weight:800;padding:0 9px;margin-bottom:-10px}
+    .sidebar-links{display:grid;gap:6px}
+    .sidebar-links a{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:12px;color:#e8f4eb;text-decoration:none;font-size:.82rem;transition:.18s}
+    .sidebar-links a:hover,.sidebar-links a.active{background:#ffffff20;color:#fff;box-shadow:inset -3px 0 #b9dfc2}
+    .sidebar-links .side-ico{width:25px;height:25px;display:grid;place-items:center;border-radius:8px;background:#ffffff18;font-size:14px}
+    .sidebar-footer{margin-top:auto;padding:13px;border:1px solid #ffffff26;background:#ffffff10;border-radius:14px;font-size:.72rem;color:#d5e9da}
+    body>header{margin-right:248px}
+    body>.container{margin-right:248px!important;max-width:none!important;padding:0 clamp(18px,3vw,42px)!important}
+    .app-hero{margin-top:24px}
+    .folder-section{margin:18px 0 22px}
+    .folder-heading{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .folder-heading h2{font-size:1rem;color:#28583b;margin:0}.folder-heading p{font-size:.72rem;color:#82958a;margin:4px 0 0}
+    .folder-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+    .app-folder{position:relative;min-height:116px;padding:15px;border-radius:18px;border:1px solid #d9e8dc;background:linear-gradient(145deg,#fff,#f1f8f2);box-shadow:0 8px 22px rgba(39,83,52,.06);display:flex;flex-direction:column;justify-content:space-between;text-decoration:none;color:#294c36;transition:.2s}
+    .app-folder:hover{transform:translateY(-3px);border-color:#a9cbb1;box-shadow:0 13px 28px rgba(39,83,52,.12)}
+    .folder-top{display:flex;align-items:center;justify-content:space-between}
+    .folder-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:#e2f0e5;color:#39734c;font-size:21px}
+    .folder-count{font-size:.65rem;color:#8aa091;background:#edf5ef;border-radius:20px;padding:4px 8px}
+    .app-folder strong{font-size:.84rem}.app-folder small{font-size:.69rem;color:#829589}
+    .app-folder:after{content:"";position:absolute;top:-1px;right:17px;width:34px;height:4px;border-radius:0 0 5px 5px;background:#83b694}
+    .mobile-app-nav{display:none}
+    @media(max-width:900px){.app-sidebar{width:205px}body>header,body>.container{margin-right:205px!important}.folder-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:650px){.app-sidebar{display:none}body>header,body>.container{margin-right:0!important}.mobile-app-nav{display:flex;position:sticky;top:0;z-index:35;justify-content:space-around;gap:4px;padding:8px;background:#fff;border-bottom:1px solid #dce9df;box-shadow:0 5px 15px #244b3510}.mobile-app-nav a{font-size:.68rem;color:#41694d;text-decoration:none;padding:7px 5px;border-radius:9px}.folder-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.app-folder{min-height:104px;padding:11px}.folder-heading{align-items:start;flex-direction:column}body>.container{padding:0 12px!important}}
+
   </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -303,9 +334,29 @@
   <p>کنترل فنی، پایش اجرا و مدیریت یکپارچه پروژه‌ها</p>
 </header>
 
+
+<aside class="app-sidebar" aria-label="منوی اصلی جاودان سازه">
+ <div class="sidebar-brand"><div class="sidebar-mark">ج</div><div><strong>جاودان سازه</strong><small>JAVDAN SAZEH</small></div></div>
+ <div class="sidebar-caption">فضای کاری</div>
+ <nav class="sidebar-links">
+  <a class="active" href="#app-home"><span class="side-ico">▦</span>داشبورد اصلی</a>
+  <a href="#pm-workspace"><span class="side-ico">▤</span>مدیریت پروژه</a>
+  <a href="#checklist-area"><span class="side-ico">✓</span>چک‌لیست فنی</a>
+  <a href="#daily-area"><span class="side-ico">▧</span>گزارش‌های روزانه</a>
+  <a href="#update-panel"><span class="side-ico">⌘</span>منابع و آیین‌نامه‌ها</a>
+ </nav>
+ <div class="sidebar-caption">مدیریت و اسناد</div>
+ <nav class="sidebar-links">
+  <a href="#pm-pane-backup"><span class="side-ico">▣</span>پشتیبان‌گیری</a>
+  <a href="admin.html" id="admin-sidebar-link"><span class="side-ico">⚙</span>مدیریت کاربران</a>
+ </nav>
+ <div class="sidebar-footer"><strong>JAVDAN WORKSPACE</strong><br/>سامانه هوشمند کنترل پروژه‌های عمرانی</div>
+</aside>
+<nav class="mobile-app-nav" aria-label="میانبرها"><a href="#app-home">خانه</a><a href="#pm-workspace">پروژه</a><a href="#checklist-area">چک‌لیست</a><a href="#daily-area">گزارش</a><a href="#update-panel">منابع</a></nav>
+
 <div class="container">
 
-  <section class="app-hero" aria-label="داشبورد جاودان سازه">
+  <section class="app-hero" id="app-home" aria-label="داشبورد جاودان سازه">
     <div class="hero-topline"><span class="hero-brand">JAVDAN SAZEH</span><span class="hero-role" id="hero-role">فضای کاری پروژه</span></div>
     <h2 id="hero-greeting">مدیریت هوشمند پروژه‌های عمرانی</h2>
     <p id="hero-subtitle">تمام اطلاعات فنی، اجرایی و مدیریتی پروژه را در یک فضای منظم و یکپارچه کنترل کنید.</p>
@@ -318,6 +369,19 @@
     <a class="quick-card" href="#daily-area"><span class="quick-icon">▤</span><strong>گزارش و دفترچه</strong><small>ثبت روزانه و مستندات</small></a>
     <a class="quick-card" href="#update-panel"><span class="quick-icon">↻</span><strong>منابع و به‌روزرسانی</strong><small>اتصال و بررسی منابع</small></a>
   </nav>
+
+
+  <section class="folder-section" aria-label="پوشه‌های کاری">
+   <div class="folder-heading"><div><h2>فضای کاری و پوشه‌های پروژه</h2><p>بخش‌های نرم‌افزار در دسته‌بندی‌های مستقل و دسترسی سریع</p></div></div>
+   <div class="folder-grid">
+    <a class="app-folder" href="#pm-workspace"><span class="folder-top"><span class="folder-icon">▦</span><span class="folder-count">مدیریت</span></span><strong>پروژه‌ها و مدیریت اجرایی</strong><small>داشبورد، برنامه، بودجه، ریسک و نقاط عطف</small></a>
+    <a class="app-folder" href="#checklist-area"><span class="folder-top"><span class="folder-icon">✓</span><span class="folder-count">کنترل فنی</span></span><strong>چک‌لیست‌ها و کنترل کیفیت</strong><small>مراحل اجرا، آیتم‌ها و شواهد فنی</small></a>
+    <a class="app-folder" href="#daily-area"><span class="folder-top"><span class="folder-icon">▤</span><span class="folder-count">مستندات</span></span><strong>گزارش‌ها و دفترچه کارگاه</strong><small>گزارش روزانه، یادداشت‌ها و پیگیری‌ها</small></a>
+    <a class="app-folder" href="#update-panel"><span class="folder-top"><span class="folder-icon">⌘</span><span class="folder-count">منابع</span></span><strong>آیین‌نامه‌ها و منابع فنی</strong><small>مرکز دریافت و بررسی به‌روزرسانی‌ها</small></a>
+    <a class="app-folder" href="#pm-pane-backup"><span class="folder-top"><span class="folder-icon">▣</span><span class="folder-count">بایگانی</span></span><strong>پشتیبان و خروجی اطلاعات</strong><small>دریافت و بازیابی نسخه پشتیبان پروژه</small></a>
+    <a class="app-folder" href="admin.html"><span class="folder-top"><span class="folder-icon">⚙</span><span class="folder-count">مدیریت سامانه</span></span><strong>کاربران و سطح دسترسی</strong><small>پنل مدیریت اعضا و نقش‌های سامانه</small></a>
+   </div>
+  </section>
 
   <div class="section-ribbon">اطلاعات پایه و مشخصات پروژه</div>
   <div class="controls">
