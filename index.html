@@ -418,6 +418,46 @@
       .mobile-app-nav a{font-size:.6rem}
     }
 
+  
+    /* Warm gold + amber accents over the emerald/pastel-green identity */
+    :root{--javdan-gold:#e7b84f;--javdan-gold-soft:#fff3cf;--javdan-orange:#e98b43;--javdan-orange-soft:#fff0e2}
+    [data-theme="light"]{--signal:#6f9f7b;--signal-hover:#527f60;--signal-glow:rgba(231,184,79,.2)}
+    .app-sidebar{border-left:3px solid #e7b84f}
+    .sidebar-mark{background:linear-gradient(145deg,#fff4d4,#e7b84f 72%,#d99a35);color:#31583b;box-shadow:0 5px 18px #e7b84f40}
+    .sidebar-caption{color:#f2d99b}
+    .app-sidebar a.active,.app-sidebar a:hover{background:linear-gradient(90deg,#ffffff20,#e7b84f24);border-color:#e7b84f70}
+    .app-sidebar a.active .side-ico{color:#ffd477}
+    .app-hero{position:relative;overflow:hidden;border-color:#e8d9aa!important}
+    .app-hero:after{content:"";position:absolute;left:-48px;top:-62px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,#f3c86b42,transparent 68%);pointer-events:none}
+    .app-hero h2{background:linear-gradient(90deg,#2e6845,#bd842f);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .hero-actions a:first-child,.btn-primary{background:linear-gradient(115deg,#e7b84f,#e98b43)!important;border-color:#d99a35!important;color:#273f2d!important;box-shadow:0 5px 15px #dca74a35}
+    .quick-icon{background:linear-gradient(145deg,#fff2ca,#f4d58c)!important;color:#94621f!important}
+    .quick-card{border-color:#e9dfc5!important}
+    .quick-card:hover{border-color:#e5b956!important;box-shadow:0 10px 24px #dca74a20!important}
+    .app-folder{border-color:#dce8d9}
+    .app-folder:nth-child(3n+2) .folder-icon{background:#fff0d7;color:#b77928}
+    .app-folder:nth-child(3n+3) .folder-icon{background:#ffeadb;color:#c87536}
+    .app-folder:hover{border-color:#e4bd69;box-shadow:0 13px 28px #d8a54a24}
+    .app-folder .folder-count{background:#fff4dc;color:#a87832}
+    .technical-folder{border-color:#e2c477!important}
+    .technical-folder .folder-icon{background:linear-gradient(145deg,#fff0c8,#f4d68f)!important;color:#9b6b24!important}
+    .visual-card{border-color:#e4e7d4}
+    .visual-card h3{color:#315e40}
+    .live-pill{background:#fff0d2;color:#a66c20;border:1px solid #f0d69b}
+    .live-donut{background:conic-gradient(#4f9162 0%,#e7b84f var(--progress),#e3eee5 var(--progress))}
+    .live-track span{background:linear-gradient(90deg,#9fcaaa 0%,#6b9b68 58%,#e7b84f 82%,#e98b43 100%)}
+    .live-phase-meta strong{color:#a8752d}
+    .module-top{border-color:#e7d7aa;background:linear-gradient(110deg,#e4f1e7 0%,#fff9e9 68%,#fff 100%)}
+    .module-back{border-color:#e8d49f;color:#986c2d}
+    .section-ribbon{border-right:4px solid #e7b84f}
+    .pm-tab.active{background:linear-gradient(110deg,#5d956d,#d9a94e)!important;border-color:#d5a344!important}
+    .btn-warning,.warning,.status-warning{border-color:#e9c46b}
+    @media(max-width:768px){
+      .app-hero{border-top:3px solid #e7b84f!important}
+      .quick-card,.app-folder{box-shadow:0 5px 15px rgba(87,119,86,.07),0 2px 0 #f3dba8 inset}
+      .hero-actions a:first-child,.btn-primary{min-height:44px}
+    }
+
   </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
