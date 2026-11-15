@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2048" height="768" viewBox="0 0 2048 768">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f4fbf6"/><stop offset=".48" stop-color="#d9eee1"/><stop offset="1" stop-color="#0b493b"/></linearGradient>
+ <linearGradient id="emerald" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0c6651"/><stop offset="1" stop-color="#082f29"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#9c7130"/><stop offset=".5" stop-color="#f1d18a"/><stop offset="1" stop-color="#a77b37"/></linearGradient>
+ <pattern id="grid" width="44" height="44" patternUnits="userSpaceOnUse"><path d="M44 0H0V44" fill="none" stroke="#17624d" stroke-opacity=".11" stroke-width="1"/></pattern>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#052c24" flood-opacity=".22"/></filter>
+</defs>
+<rect width="2048" height="768" fill="url(#bg)"/><rect width="2048" height="768" fill="url(#grid)"/>
+<path d="M0 610 400 430 760 555 1150 300 1530 500 2048 240V768H0Z" fill="#0c5947" opacity=".10"/>
+<path d="M0 700 450 520 820 640 1220 390 1630 565 2048 365" fill="none" stroke="#b18a4a" stroke-width="3" opacity=".38"/>
+<!-- technical drawing on left -->
+<g fill="none" stroke="#0e5b48" stroke-width="3" opacity=".48">
+ <path d="M80 580V210H500V580M80 300H500M80 420H500M180 210V580M300 210V580M420 210V580"/>
+ <path d="M60 580H530M100 185H480M80 170l-20 15 20 15M500 170l20 15-20 15"/>
+ <path d="M120 250l90-60 90 60M210 190v-60M300 250v-60M360 250l70-45 70 45"/>
+ <path d="M120 480h330M120 500h330M145 480v100M230 480v100M315 480v100M400 480v100"/>
+</g>
+<g fill="none" stroke="#b28a4b" stroke-width="3" opacity=".7"><path d="M130 610V150M115 170h30M115 590h30M160 135H470"/><circle cx="300" cy="360" r="112" stroke-dasharray="7 9"/></g>
+<!-- skyline and tower crane -->
+<g filter="url(#shadow)">
+ <path d="M1450 630V280h115v350M1575 630V205h145v425M1730 630V340h105v290M1845 630V250h125v380" fill="url(#emerald)" opacity=".94"/>
+ <g stroke="#d9c08a" stroke-width="5" opacity=".9"><path d="M1475 320h65M1475 370h65M1475 420h65M1475 470h65M1475 520h65M1600 250h95M1600 305h95M1600 360h95M1600 415h95M1600 470h95M1600 525h95M1750 385h65M1750 435h65M1750 485h65M1865 295h85M1865 350h85M1865 405h85M1865 460h85M1865 515h85"/></g>
+</g>
+<g fill="none" stroke="#123f35" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity=".82">
+ <path d="M1690 190V72M1690 92H1980M1690 92l-92 58M1690 92l80 55M1980 92v22M1600 150h-20M1770 147v-15"/>
+ <path d="M1680 72h20M1672 62h36M1685 72l-12 18h35"/>
+</g>
+<!-- brand panel -->
+<g filter="url(#shadow)">
+ <rect x="585" y="160" width="850" height="430" rx="28" fill="#fff" fill-opacity=".80" stroke="#fff" stroke-width="3"/>
+ <path d="M625 190h770" stroke="url(#gold)" stroke-width="5"/>
+ <path d="M625 555h770" stroke="url(#gold)" stroke-width="5"/>
+</g>
+<g text-anchor="middle" font-family="Arial, sans-serif">
+ <text x="1010" y="340" font-size="116" font-weight="800" letter-spacing="9" fill="#0c4b3d">JAVDAN</text>
+ <text x="1010" y="455" font-size="84" font-weight="700" letter-spacing="14" fill="url(#gold)">SAZEH</text>
+ <text x="1010" y="510" font-size="25" letter-spacing="5" fill="#456b5d">SMART CONSTRUCTION &amp; ENGINEERING</text>
+</g>
+<g fill="none" stroke="#b18a4a" stroke-width="4"><path d="M780 375h95M1145 375h95"/><path d="M1010 205l20 22-20 22-20-22z"/></g>
+<g fill="#0b5946" opacity=".65"><circle cx="140" cy="110" r="7"/><circle cx="190" cy="110" r="7"/><circle cx="240" cy="110" r="7"/><circle cx="1930" cy="670" r="7"/><circle cx="1880" cy="670" r="7"/><circle cx="1830" cy="670" r="7"/></g>
+</svg>
