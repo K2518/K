@@ -5092,6 +5092,12 @@
     checks: {}, evidence: {}, project: '', client: '', date: '', theme: 'light', projectType: 'villa', userRole: 'nazer',
     checklistData: JSON.parse(JSON.stringify(BASE_PHASES)), notebook: [], pm: { manager:'', start:'', finish:'', budget:0, actualCost:0, physical:0, tasks:[], risks:[], milestones:[], reports:[] }
   }, state || {});
+  // Add newly published supplemental form checks to existing local projects without touching their saved data.
+  if (!Array.isArray(state.checklistData)) state.checklistData = JSON.parse(JSON.stringify(BASE_PHASES));
+  const supplementalPhase = BASE_PHASES.find(p => p.id === 'supplemental_forms');
+  if (supplementalPhase && !state.checklistData.some(p => p && p.id === 'supplemental_forms')) {
+    state.checklistData.push(JSON.parse(JSON.stringify(supplementalPhase)));
+  }
   if (!state.uiThemeVersion) { state.theme = 'light'; state.uiThemeVersion = 1; }
   state.pm = Object.assign({manager:'', start:'', finish:'', budget:0, actualCost:0, physical:0, tasks:[], risks:[], milestones:[], reports:[]}, state.pm || {});
   ['tasks','risks','milestones','reports'].forEach(k => { if (!Array.isArray(state.pm[k])) state.pm[k] = []; });
