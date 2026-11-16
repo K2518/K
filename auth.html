@@ -21,7 +21,7 @@ const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let mode='login',method='email',step='form';
 const $=id=>document.getElementById(id);
 function msg(t){$('msg').textContent=t;$('msg').style.display='block'}
-function cleanPhone(){return $('phone').value.trim().replace(/[\\s()-]/g,'')}
+function cleanPhone(){return $('phone').value.trim().replace(/[\s()-]/g,'')}
 function showStep(s){step=s;$('passwordWrap').classList.toggle('hidden',s==='otp'||s==='newpass');$('otpWrap').classList.toggle('hidden',s!=='otp');$('newPasswordWrap').classList.toggle('hidden',s!=='newpass');$('forgotBtn').classList.toggle('hidden',mode!=='login'||s!=='form');$('submitBtn').textContent=s==='otp'?'تأیید کد پیامک':s==='newpass'?'ثبت رمز عبور جدید':mode==='login'?'ورود به حساب': 'ایجاد حساب کاربری'}
 function setMode(m){mode=m;step='form';$('loginTab').classList.toggle('active',m==='login');$('signupTab').classList.toggle('active',m==='signup');$('nameWrap').classList.toggle('hidden',m!=='signup');$('msg').style.display='none';showStep('form')}
 function setMethod(m){method=m;$('emailTab').classList.toggle('active',m==='email');$('phoneTab').classList.toggle('active',m==='phone');$('emailWrap').classList.toggle('hidden',m!=='email');$('phoneWrap').classList.toggle('hidden',m!=='phone');$('email').required=m==='email';$('phone').required=m==='phone';$('password').autocomplete=mode==='login'?'current-password':'new-password';$('msg').style.display='none';showStep('form')}
