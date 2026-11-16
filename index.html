@@ -476,8 +476,28 @@
       header.site-banner img{width:100%;height:auto;aspect-ratio:768 / 205;object-fit:contain}
     }
 
+  
+/* JAVDAN printable checklist + Excel export */
+.checklist-tools{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 18px}
+.checklist-tools button{width:auto;min-width:170px;padding:11px 16px}
+#printable-checklist{display:none}
+@media print{
+ @page{size:A4;margin:14mm}
+ body{background:#fff!important;color:#111!important;font-family:Vazirmatn,sans-serif!important}
+ body *{visibility:hidden!important}
+ #printable-checklist,#printable-checklist *{visibility:visible!important}
+ #printable-checklist{display:block!important;position:absolute;inset:0;width:100%;color:#111!important;background:#fff!important}
+ #printable-checklist h1{font-size:18pt;text-align:center;margin-bottom:5mm}
+ #printable-checklist .print-meta{display:grid;grid-template-columns:1fr 1fr;gap:3mm;margin-bottom:6mm;font-size:10pt}
+ #printable-checklist table{width:100%;border-collapse:collapse;font-size:9pt}
+ #printable-checklist th,#printable-checklist td{border:1px solid #777;padding:6px;text-align:right;vertical-align:top}
+ #printable-checklist th{background:#e9f1eb!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ #printable-checklist tr{break-inside:avoid}
+}
+
   </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -773,8 +793,10 @@
     <div class="module-top"><div><h2>پوشه پایش فنی و چک‌لیست اجرایی</h2><p>تمام کنترل‌های فنی، مراحل اجرایی و شواهد پروژه در این بخش نگهداری می‌شود.</p></div><a class="module-back" href="#app-home">← بازگشت به داشبورد</a></div>
   <div class="section-ribbon" id="checklist-area">پایش فنی و چک‌لیست اجرایی</div>
   <div class="filter-hint" id="filter-hint"></div>
+  <div class="checklist-tools"><button type="button" class="btn-primary" id="export-checklist-xlsx">⬇ دریافت اکسل چک‌لیست</button><button type="button" class="btn-ghost" id="print-checklist">▤ چاپ / ذخیره PDF</button></div>
   <div class="progress-grid" id="progress-container"></div>
   <main id="checklist-container"></main>
+  <section id="printable-checklist" aria-hidden="true"></section>
   </section>
 
   <div id="daily-area" class="section-ribbon">دفترچه و گزارش‌های روزانه</div>
@@ -5437,6 +5459,60 @@
       return renderItem(text, key, j);
     }).join('');
   }
+
+
+  // Excel and print exports use the exact active project checklist and saved check states.
+  function collectChecklistRows(){
+    const rows=[];
+    const type=currentProjectType();
+    const role=currentUserRole();
+    const phases=(state.checklistData||[]).filter(p=>p&&p.id&&p.title)
+      .filter(p=>typesAllow(PHASE_TYPES[p.id]||ALL_TYPES,type))
+      .filter(p=>filterPhasesForRole([p],role).length)
+      .filter(p=>currentFilter()==='all'||p.id===currentFilter());
+    function walk(items,path,phase,section){
+      (items||[]).forEach((item,index)=>{
+        if(item&&typeof item==='object'&&item.header){
+          if(sectionAllowed(item.header,type))walk(item.items||[],path+'/'+index,phase,item.header);
+          return;
+        }
+        const label=typeof item==='string'?item:'';
+        if(!label||!itemAllowed(label,type))return;
+        const key='chk-'+hashId(path+'/'+index+'/'+label);
+        const ev=state.evidence&&state.evidence[key];
+        let evidence='';
+        if(typeof ev==='string')evidence=ev;
+        else if(ev&&typeof ev==='object')evidence=ev.text||ev.note||JSON.stringify(ev);
+        rows.push({phase,section,item:label,status:state.checks[key]?'تکمیل‌شده':'انجام‌نشده',evidence:evidence||''});
+      });
+    }
+    phases.forEach(p=>walk(p.items||[],p.id,p.title,''));
+    return rows;
+  }
+  function exportChecklistExcel(){
+    if(!window.XLSX){alert('کتابخانه اکسل بارگذاری نشده؛ اتصال اینترنت را بررسی و صفحه را تازه‌سازی کنید.');return;}
+    const rows=collectChecklistRows();
+    const meta=[['سامانه جاودان سازه | چک‌لیست اجرایی'],['پروژه',state.project||document.getElementById('project-name').value||''],['کارفرما',state.client||document.getElementById('client-name').value||''],['تاریخ بازدید',state.date||document.getElementById('visit-date').value||''],['نوع پروژه',currentProjectType()],['نقش کاربر',currentUserRole()],[]];
+    const data=[...meta,['فاز','زیرعنوان','شرح کنترل','وضعیت','شواهد / توضیحات'],...rows.map(r=>[r.phase,r.section,r.item,r.status,r.evidence])];
+    const ws=XLSX.utils.aoa_to_sheet(data);
+    ws['!cols']=[{wch:28},{wch:26},{wch:65},{wch:18},{wch:45}];
+    ws['!rtl']=true;ws['!autofilter']={ref:'A8:E'+(7+rows.length)};
+    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'چک‌لیست پروژه');
+    XLSX.writeFile(wb,'JAVDAN-Checklist-'+(new Date().toISOString().slice(0,10))+'.xlsx');
+  }
+  function prepareChecklistPrint(){
+    const rows=collectChecklistRows();
+    const root=document.getElementById('printable-checklist');
+    const escPrint=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    root.innerHTML='<h1>چک‌لیست پایش فنی و اجرایی | جاودان سازه</h1>'+
+      '<div class="print-meta"><div>نام پروژه: '+escPrint(state.project||document.getElementById('project-name').value)+'</div><div>کارفرما: '+escPrint(state.client||document.getElementById('client-name').value)+'</div><div>تاریخ بازدید: '+escPrint(state.date||document.getElementById('visit-date').value)+'</div><div>تاریخ چاپ: '+new Date().toLocaleDateString('fa-IR')+'</div></div>'+
+      '<table><thead><tr><th>ردیف</th><th>فاز</th><th>زیرعنوان</th><th>شرح کنترل</th><th>وضعیت</th><th>شواهد / توضیحات</th></tr></thead><tbody>'+
+      rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+escPrint(r.phase)+'</td><td>'+escPrint(r.section)+'</td><td>'+escPrint(r.item)+'</td><td>'+escPrint(r.status)+'</td><td>'+escPrint(r.evidence)+'</td></tr>').join('')+
+      '</tbody></table>';
+    window.print();
+  }
+  document.getElementById('export-checklist-xlsx')?.addEventListener('click',exportChecklistExcel);
+  document.getElementById('print-checklist')?.addEventListener('click',prepareChecklistPrint);
 
   function renderItem(text, key, j) {
     const id = 'chk-' + hashId(key + '/' + j + '/' + text);
