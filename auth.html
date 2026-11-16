@@ -50,6 +50,7 @@ $('authForm').addEventListener('submit',async e=>{e.preventDefault();$('submitBt
  }
  }catch(err){msg(err.message||'خطا در ارتباط با سرور')}finally{$('submitBtn').disabled=false}});
 $('forgotBtn').onclick=async()=>{try{if(method==='email'){const email=$('email').value.trim();if(!email){msg('ابتدا ایمیل خود را وارد کنید.');return}const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});if(error)throw error;msg('لینک بازیابی رمز عبور به ایمیل شما ارسال شد. پوشه هرزنامه را هم بررسی کنید.')}else{const phone=cleanPhone();if(!phone){msg('ابتدا شماره موبایل را وارد کنید.');return}const {error}=await sb.auth.signInWithOtp({phone,options:{shouldCreateUser:false}});if(error)throw error;window.__phoneRecovery=true;showStep('otp');msg('کد تأیید برای بازیابی به شماره شما ارسال شد. پس از وارد کردن کد، رمز جدید را تعیین کنید.')}}catch(err){msg(err.message||'ارسال کد بازیابی ناموفق بود')}};
-sb.auth.onAuthStateChange((event)=>{if(event==='PASSWORD_RECOVERY'){showStep('newpass');msg('رمز عبور جدید خود را تعیین کنید.')}});
-sb.auth.getSession().then(({data})=>{if(data.session)routeUser()});
+let recoveryPending = location.hash.includes('type=recovery') || new URLSearchParams(location.search).get('type')==='recovery';
+sb.auth.onAuthStateChange((event)=>{if(event==='PASSWORD_RECOVERY'){recoveryPending=true;showStep('newpass');msg('رمز عبور جدید خود را تعیین کنید.')}});
+sb.auth.getSession().then(({data})=>{if(data.session&&!recoveryPending)routeUser()});
 </script></body></html>
