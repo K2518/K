@@ -5496,7 +5496,7 @@
     const data=[...meta,['فاز','زیرعنوان','شرح کنترل','وضعیت','شواهد / توضیحات'],...rows.map(r=>[r.phase,r.section,r.item,r.status,r.evidence])];
     const ws=XLSX.utils.aoa_to_sheet(data);
     ws['!cols']=[{wch:28},{wch:26},{wch:65},{wch:18},{wch:45}];
-    ws['!rtl']=true;ws['!autofilter']={ref:'A8:E'+(7+rows.length)};
+    ws['!rtl']=true;ws['!autofilter']={ref:'A8:E'+(8+rows.length)};
     const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'چک‌لیست پروژه');
     XLSX.writeFile(wb,'JAVDAN-Checklist-'+(new Date().toISOString().slice(0,10))+'.xlsx');
   }
