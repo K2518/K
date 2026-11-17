@@ -10,11 +10,12 @@ create table if not exists public.profiles (
   full_name text,
   role text not null default 'user' check (role in ('super_admin','project_manager','user')),
   is_active boolean not null default false,
--- Ensure existing installations also use admin approval for newly created profiles.
-alter table public.profiles alter column is_active set default false;
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+-- Ensure existing installations also use admin approval for newly created profiles.
+alter table public.profiles alter column is_active set default false;
 
 create table if not exists public.projects (
   id uuid primary key default gen_random_uuid(),
