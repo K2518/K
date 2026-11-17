@@ -556,6 +556,91 @@
       .mobile-app-nav a{color:#f2f6f2!important}
     }
 
+
+    /* JAVDAN THEME FIX: apply consistently to desktop and phone layouts */
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --void:#0b1410; --deep:#111e17; --surface:#1b2b21; --paper:#17251c;
+      --border:#304638; --border-hover:#496b54;
+      --text-primary:#edf5ef; --text-secondary:#b5c9ba; --text-muted:#91a99a;
+      --signal:#82b995; --signal-hover:#a0d0ad; --signal-glow:rgba(130,185,149,.22);
+      --success:#75c28d; --warning:#e7b75f; --error:#ef8585;
+      --shadow:0 8px 26px rgba(0,0,0,.28);
+    }
+    [data-theme="dark"] body {
+      background:radial-gradient(ellipse at 12% 0%,rgba(54,100,68,.22),transparent 38%),linear-gradient(145deg,#0b1410,#101d15 65%,#0c1711)!important;
+      color:var(--text-primary)!important;
+    }
+    [data-theme="dark"] header {
+      background:linear-gradient(115deg,#101d15 0%,#1c3927 55%,#294b35 100%)!important;
+      color:#f1f7f2!important;border-color:var(--border)!important;
+    }
+    [data-theme="dark"] header h1,
+    [data-theme="dark"] header p,
+    [data-theme="dark"] header:before {color:#f1f7f2!important}
+    [data-theme="dark"] .control-card,
+    [data-theme="dark"] .card,
+    [data-theme="dark"] .progress-card,
+    [data-theme="dark"] .logbook-section,
+    [data-theme="dark"] .pm-panel,
+    [data-theme="dark"] .pm-card,
+    [data-theme="dark"] .pm-shell,
+    [data-theme="dark"] .phase,
+    [data-theme="dark"] .sub-accordion,
+    [data-theme="dark"] .modal,
+    [data-theme="dark"] .log-card,
+    [data-theme="dark"] .pm-kpi,
+    [data-theme="dark"] .pm-pane,
+    [data-theme="dark"] .reg-library-card {
+      background:var(--deep)!important;color:var(--text-primary)!important;
+      border-color:var(--border)!important;box-shadow:var(--shadow)!important;
+    }
+    [data-theme="dark"] .phase-header,
+    [data-theme="dark"] .sub-header,
+    [data-theme="dark"] .pm-tab,
+    [data-theme="dark"] .pm-status {
+      background:var(--surface)!important;color:var(--text-primary)!important;
+      border-color:var(--border)!important;
+    }
+    [data-theme="dark"] label,
+    [data-theme="dark"] small,
+    [data-theme="dark"] .meta,
+    [data-theme="dark"] .hint,
+    [data-theme="dark"] .pm-hint,
+    [data-theme="dark"] .pm-kpi small,
+    [data-theme="dark"] .filter-hint,
+    [data-theme="dark"] p {color:var(--text-secondary)}
+    [data-theme="dark"] input,
+    [data-theme="dark"] select,
+    [data-theme="dark"] textarea {
+      background:#142219!important;color:var(--text-primary)!important;
+      border-color:var(--border)!important;
+    }
+    [data-theme="dark"] input::placeholder,
+    [data-theme="dark"] textarea::placeholder {color:#91a99a!important}
+    [data-theme="dark"] button,
+    [data-theme="dark"] .btn-ghost,
+    [data-theme="dark"] .btn-sm,
+    [data-theme="dark"] .pm-actions button {
+      border-color:var(--border)!important;
+    }
+    [data-theme="dark"] .btn-primary,
+    [data-theme="dark"] button.ok {background:#477b58!important;color:#fff!important}
+    [data-theme="dark"] a {color:#a8d8b4}
+    [data-theme="dark"] table,
+    [data-theme="dark"] th,
+    [data-theme="dark"] td {color:var(--text-primary);border-color:var(--border)!important}
+    [data-theme="dark"] .bar-bg {background:#26392d!important}
+    [data-theme="dark"] .phase-header:hover,
+    [data-theme="dark"] .sub-header:hover {background:#263d2d!important}
+    @media(max-width:640px) {
+      #theme-toggle {min-height:42px;touch-action:manipulation}
+      [data-theme="dark"] .control-card,
+      [data-theme="dark"] .progress-card,
+      [data-theme="dark"] .phase,
+      [data-theme="dark"] .sub-accordion {box-shadow:0 5px 18px rgba(0,0,0,.22)!important}
+    }
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
