@@ -9,7 +9,7 @@ create table if not exists public.profiles (
   email text unique,
   full_name text,
   role text not null default 'user' check (role in ('super_admin','project_manager','user')),
-  is_active boolean not null default true,
+  is_active boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -151,9 +151,13 @@ for select to authenticated
 using (public.can_access_project(id));
 
 drop policy if exists "projects_create_authenticated" on public.projects;
+drop policy if exists "projects_create_authenticated" on public.projects;
 create policy "projects_create_authenticated" on public.projects
 for insert to authenticated
-with check (created_by = auth.uid() or public.is_super_admin());
+with check (
+  (created_by = auth.uid() and exists (select 1 from public.profiles p where p.user_id=auth.uid() and p.is_active=true))
+  or public.is_super_admin()
+);
 
 drop policy if exists "projects_update_managers" on public.projects;
 create policy "projects_update_managers" on public.projects
