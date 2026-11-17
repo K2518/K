@@ -671,6 +671,12 @@
       <button type="button" id="cloud-demo-project" class="btn-primary" style="margin-top:.45rem">✦ ساخت پروژه آزمایشی کامل</button>
       <small id="cloud-sync-status" style="display:block;margin-top:.35rem;color:var(--text-muted)">در انتظار اتصال امن به فضای ابری</small>
     </div>
+    <div class="control-card" id="cloud-access-notice" hidden>
+      <strong>دسترسی فضای ابری هنوز فعال نیست</strong>
+      <p style="margin:.35rem 0;color:var(--text-secondary);font-size:.82rem">پس از تأیید و انتشار پروژه توسط مدیر ارشد، بخش ذخیره‌سازی ابری برای شما نمایش داده می‌شود.</p>
+      <button type="button" id="cloud-request-project" class="btn-primary">＋ ثبت درخواست پروژه برای بررسی مدیر</button>
+      <small id="cloud-request-status" style="display:block;margin-top:.4rem;color:var(--text-muted)"></small>
+    </div>
     <div class="control-card">
       <label>نام پروژه</label>
       <input type="text" id="project-name" placeholder="مثال: برج آفتاب">
@@ -5421,7 +5427,7 @@
 
 
   const STORAGE_KEY = 'javdan-v7.0';
-  let cloudClient = null, cloudUser = null, cloudProjectId = null, cloudSaveTimer = null, cloudSaveBusy = false;
+  let cloudClient = null, cloudUser = null, cloudIsAdmin = false, cloudSaveEnabled = false, cloudProjectId = null, cloudSaveTimer = null, cloudSaveBusy = false;
   let state;
   try {
     state = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
@@ -5510,12 +5516,44 @@
   }
   async function initCloudProjects(){
     const sel=document.getElementById('cloud-project-select');
-    const {data:rows,error}=await cloudClient.from('projects').select('id,name,client_name,project_data,created_at').eq('is_archived',false).order('created_at',{ascending:true});
+    const cloudBox=document.getElementById('cloud-project-control');
+    const accessNotice=document.getElementById('cloud-access-notice');
+    const requestBtn=document.getElementById('cloud-request-project');
+    const requestStatus=document.getElementById('cloud-request-status');
+    let query=cloudClient.from('projects').select('id,name,client_name,project_data,created_at,is_approved').eq('is_archived',false).order('created_at',{ascending:true});
+    if(!cloudIsAdmin) query=query.eq('is_approved',true);
+    const {data:rows,error}=await query;
     if(error)throw error;
     let projects=rows||[];
-    if(!projects.length){
+    cloudSaveEnabled=cloudIsAdmin||projects.length>0;
+    if(!cloudSaveEnabled){
+      cloudBox.hidden=true;
+      accessNotice.hidden=false;
+      if(requestBtn) requestBtn.onclick=async()=>{
+        const name=prompt('نام پروژه‌ای که برای تأیید مدیر ثبت می‌کنید را وارد کنید:');
+        if(!name||!name.trim())return;
+        requestBtn.disabled=true;
+        if(requestStatus)requestStatus.textContent='در حال ثبت درخواست…';
+        try{
+          const {error:insertError}=await cloudClient.from('projects').insert({
+            name:name.trim(),client_name:state.client||null,created_by:cloudUser.id,
+            is_approved:false,project_data:JSON.parse(JSON.stringify({...state,project:name.trim()}))
+          });
+          if(insertError)throw insertError;
+          if(requestStatus)requestStatus.textContent='درخواست ثبت شد و برای بررسی مدیر ارسال شد. پس از تأیید، فضای ابری در همین صفحه فعال می‌شود.';
+          requestBtn.textContent='درخواست ثبت شد';
+        }catch(err){
+          if(requestStatus)requestStatus.textContent='ثبت درخواست انجام نشد: '+(err.message||'خطای نامشخص');
+          requestBtn.disabled=false;
+        }
+      };
+      return;
+    }
+    cloudBox.hidden=false;
+    accessNotice.hidden=true;
+    if(!projects.length && cloudIsAdmin){
       const name=state.project||'پروژه اول';
-      const {data:created,error:createError}=await cloudClient.from('projects').insert({name,client_name:state.client||null,created_by:cloudUser.id,project_data:JSON.parse(JSON.stringify(state))}).select('id,name,client_name,project_data,created_at').single();
+      const {data:created,error:createError}=await cloudClient.from('projects').insert({name,client_name:state.client||null,created_by:cloudUser.id,project_data:JSON.parse(JSON.stringify(state))}).select('id,name,client_name,project_data,created_at,is_approved').single();
       if(createError)throw createError;
       projects=[created];
     }
@@ -5586,7 +5624,7 @@
     try{await loadCloudProject(projects[0]);}
     catch(loadError){console.error('Initial cloud project load failed:',loadError);setCloudStatus('فهرست پروژه‌ها دریافت شد، اما بارگذاری پروژه انتخاب‌شده ناموفق بود: '+(loadError.message||''),true);}
   }
-  window.javdanInitCloudProjects=async(client,user)=>{cloudClient=client;cloudUser=user;await initCloudProjects();};
+  window.javdanInitCloudProjects=async(client,user,isAdmin=false)=>{cloudClient=client;cloudUser=user;cloudIsAdmin=isAdmin;await initCloudProjects();};
 
   // THEME
   const THEME_KEY = 'javdan-theme-v1';
@@ -6210,7 +6248,7 @@
   const subtitle=document.getElementById('hero-subtitle');if(subtitle)subtitle.textContent='فضای کاری شما آماده است؛ پروژه‌ها، کنترل فنی و گزارش‌های اجرایی را از همین‌جا مدیریت کنید.';
   // Show the application as soon as authentication succeeds. Cloud sync must not hide the entire app.
   showApp();
-  try{await window.javdanInitCloudProjects(sb,user);}
+  try{await window.javdanInitCloudProjects(sb,user,p.role==='super_admin');}
   catch(cloudError){
    console.error('JAVDAN cloud initialization failed:',cloudError);
    const status=document.getElementById('cloud-sync-status');
