@@ -5424,7 +5424,7 @@
     }
     sel.innerHTML=projects.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.name||'پروژه بدون نام')+'</option>').join('');
     await loadCloudProject(projects[0]);
-    sel.onchange=async()=>{const id=sel.value;const row=projects.find(p=>p.id===id);if(row){if(cloudProjectId)await saveCloudWorkspace();await loadCloudProject(row);}};
+    sel.onchange=async()=>{const id=sel.value;const row=projects.find(p=>p.id===id);if(row){clearTimeout(cloudSaveTimer);if(cloudProjectId)await saveCloudWorkspace();await loadCloudProject(row);}};
     document.getElementById('cloud-new-project').onclick=async()=>{
       const name=prompt('نام پروژه جدید را وارد کنید:');if(!name||!name.trim())return;
       const fresh={...state,project:name.trim(),client:'',date:'',checks:{},evidence:{},notebook:[],pm:{manager:'',start:'',finish:'',budget:0,actualCost:0,physical:0,tasks:[],risks:[],milestones:[],reports:[]},checklistData:JSON.parse(JSON.stringify(BASE_PHASES))};
@@ -5450,6 +5450,10 @@
   document.getElementById('project-name').value = state.project || '';
   document.getElementById('client-name').value = state.client || '';
   if (state.date) document.getElementById('visit-date').value = state.date;
+  document.getElementById('project-name').addEventListener('change',e=>{state.project=e.target.value.trim();saveState();});
+  document.getElementById('client-name').addEventListener('change',e=>{state.client=e.target.value.trim();saveState();});
+  document.getElementById('visit-date').addEventListener('change',e=>{state.date=e.target.value.trim();saveState();});
+  document.getElementById('project-type').addEventListener('change',e=>{state.projectType=e.target.value;saveState();renderProgress();renderChecklist(currentFilter());updateProgressBars();});
 
 
   // Migrate old text-keyed check states to per-row keys (duplicate labels no longer toggle together).
