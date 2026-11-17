@@ -115,3 +115,74 @@ before update of is_approved on public.projects
 for each row execute function public.guard_project_approval_change();
 
 -- The existing projects_read_accessible policy continues to use can_access_project().
+
+-- JAVDAN: archive all existing projects from active lists without deleting data.
+-- Existing project rows and project_data remain stored in the database.
+alter table public.projects
+  add column if not exists is_archived boolean not null default false;
+
+update public.projects
+set is_archived = true
+where is_archived = false;
+
+-- Archived projects remain visible to the Super Admin only.
+create or replace function public.can_access_project(p_project_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select public.is_super_admin()
+    or exists (
+      select 1
+      from public.projects pr
+      join public.profiles p on p.user_id = pr.created_by
+      where pr.id = p_project_id
+        and pr.is_archived = false
+        and pr.created_by = auth.uid()
+        and p.is_active = true
+    )
+    or exists (
+      select 1
+      from public.projects pr
+      join public.project_members pm on pm.project_id = pr.id
+      join public.profiles p on p.user_id = pm.user_id
+      where pr.id = p_project_id
+        and pr.is_archived = false
+        and pr.is_approved = true
+        and pm.user_id = auth.uid()
+        and p.is_active = true
+    );
+$$;
+
+create or replace function public.can_manage_project(p_project_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select public.is_super_admin()
+    or exists (
+      select 1
+      from public.projects pr
+      join public.profiles p on p.user_id = pr.created_by
+      where pr.id = p_project_id
+        and pr.is_archived = false
+        and pr.created_by = auth.uid()
+        and p.is_active = true
+    )
+    or exists (
+      select 1
+      from public.projects pr
+      join public.project_members pm on pm.project_id = pr.id
+      join public.profiles p on p.user_id = pm.user_id
+      where pr.id = p_project_id
+        and pr.is_archived = false
+        and pr.is_approved = true
+        and pm.user_id = auth.uid()
+        and pm.access_level = 'manager'
+        and p.is_active = true
+    );
+$$;
