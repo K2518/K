@@ -666,6 +666,123 @@
  #printable-checklist h2{font-size:13pt;border-bottom:1px solid #777;padding-bottom:2mm}
 }
 </style>
+
+<style id="javdan-final-theme-override">
+/* Final theme layer: deliberately placed after every other stylesheet */
+html[data-theme="dark"]{color-scheme:dark!important}
+html[data-theme="dark"] body{
+ background:radial-gradient(ellipse at 12% 0%,rgba(54,100,68,.22),transparent 38%),linear-gradient(145deg,#0b1410,#101d15 65%,#0c1711)!important;
+ color:#edf5ef!important
+}
+html[data-theme="dark"] header:not(.site-banner),
+html[data-theme="dark"] .app-sidebar,
+html[data-theme="dark"] .mobile-app-nav{
+ background:linear-gradient(115deg,#101d15,#1c3927 60%,#294b35)!important;
+ color:#f1f7f2!important;border-color:#304638!important
+}
+html[data-theme="dark"] .control-card,
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .progress-card,
+html[data-theme="dark"] .logbook-section,
+html[data-theme="dark"] .pm-panel,
+html[data-theme="dark"] .pm-card,
+html[data-theme="dark"] .pm-shell,
+html[data-theme="dark"] .phase,
+html[data-theme="dark"] .sub-accordion,
+html[data-theme="dark"] .modal,
+html[data-theme="dark"] .log-card,
+html[data-theme="dark"] .pm-kpi,
+html[data-theme="dark"] .pm-pane,
+html[data-theme="dark"] .reg-library-card,
+html[data-theme="dark"] .pm-analytics-card,
+html[data-theme="dark"] .evidence-card,
+html[data-theme="dark"] .notebook-card{
+ background:#111e17!important;color:#edf5ef!important;
+ border-color:#304638!important;box-shadow:0 8px 26px rgba(0,0,0,.28)!important
+}
+html[data-theme="dark"] .phase-header,
+html[data-theme="dark"] .sub-header,
+html[data-theme="dark"] .pm-tab,
+html[data-theme="dark"] .pm-status,
+html[data-theme="dark"] .pm-chart-track{
+ background:#1b2b21!important;color:#edf5ef!important;border-color:#304638!important
+}
+html[data-theme="dark"] h1,html[data-theme="dark"] h2,
+html[data-theme="dark"] h3,html[data-theme="dark"] h4,
+html[data-theme="dark"] strong,html[data-theme="dark"] label,
+html[data-theme="dark"] p,html[data-theme="dark"] small,
+html[data-theme="dark"] span,html[data-theme="dark"] li,
+html[data-theme="dark"] td,html[data-theme="dark"] th,
+html[data-theme="dark"] .pm-chart-row,
+html[data-theme="dark"] .pm-chart-value,
+html[data-theme="dark"] .pm-analytics-card h4{
+ color:inherit
+}
+html[data-theme="dark"] .control-card label,
+html[data-theme="dark"] .pm-hint,
+html[data-theme="dark"] .pm-kpi small,
+html[data-theme="dark"] .pm-analytics-note,
+html[data-theme="dark"] .pm-chart-row,
+html[data-theme="dark"] .filter-hint{color:#b5c9ba!important}
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea{
+ background:#142219!important;color:#edf5ef!important;border-color:#304638!important
+}
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder{color:#91a99a!important}
+html[data-theme="dark"] button,
+html[data-theme="dark"] .btn-ghost,
+html[data-theme="dark"] .btn-sm,
+html[data-theme="dark"] .pm-actions button{
+ background-color:#1b2b21!important;color:#edf5ef!important;border-color:#496b54!important
+}
+html[data-theme="dark"] .btn-primary,
+html[data-theme="dark"] button.btn-primary,
+html[data-theme="dark"] #theme-toggle{
+ background:#477b58!important;color:#fff!important;border-color:#6eaa7d!important
+}
+html[data-theme="dark"] a{color:#a8d8b4!important}
+html[data-theme="dark"] table,html[data-theme="dark"] th,
+html[data-theme="dark"] td{border-color:#304638!important}
+html[data-theme="dark"] .site-banner{background:#101d15!important}
+html[data-theme="dark"] .site-banner img{filter:brightness(.78) saturate(.9)}
+html[data-theme="light"]{color-scheme:light!important}
+html[data-theme="light"] body{
+ background:radial-gradient(ellipse at 12% 0%,#e2f0e5 0%,transparent 38%),linear-gradient(145deg,#f7fbf7,#edf5ef 65%,#f8faf8)!important;
+ color:#263a30!important
+}
+html[data-theme="light"] .control-card,
+html[data-theme="light"] .card,
+html[data-theme="light"] .progress-card,
+html[data-theme="light"] .logbook-section,
+html[data-theme="light"] .pm-panel,
+html[data-theme="light"] .pm-card,
+html[data-theme="light"] .pm-shell,
+html[data-theme="light"] .phase,
+html[data-theme="light"] .sub-accordion,
+html[data-theme="light"] .modal,
+html[data-theme="light"] .log-card,
+html[data-theme="light"] .pm-kpi,
+html[data-theme="light"] .pm-pane,
+html[data-theme="light"] .reg-library-card,
+html[data-theme="light"] .pm-analytics-card{
+ background:#fff!important;color:#263a30!important;border-color:#d5e1d9!important
+}
+html[data-theme="light"] input,
+html[data-theme="light"] select,
+html[data-theme="light"] textarea{background:#fbfefb!important;color:#263a30!important;border-color:#d5e3d8!important}
+html[data-theme="light"] .pm-tab{background:#f4faf5!important;color:#315e40!important}
+html[data-theme="light"] .btn-primary{background:#78a88a!important;color:#fff!important}
+@media(max-width:700px){
+ html[data-theme="dark"] body{background:#0b1410!important;color:#edf5ef!important}
+ html[data-theme="dark"] .app-sidebar{background:#111e17!important}
+ html[data-theme="dark"] .control-card,html[data-theme="dark"] .progress-card,
+ html[data-theme="dark"] .phase,html[data-theme="dark"] .sub-accordion,
+ html[data-theme="dark"] .pm-shell{background:#111e17!important;color:#edf5ef!important}
+}
+</style>
+
 </head>
 <body>
 
