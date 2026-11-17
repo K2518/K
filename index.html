@@ -495,7 +495,68 @@
  #printable-checklist tr{break-inside:avoid}
 }
 
-  </style>
+  
+    /* JAVDAN SAZEH — charcoal + emerald premium accents */
+    :root{
+      --javdan-charcoal:#17231d;
+      --javdan-charcoal-2:#22332a;
+      --javdan-ink:#26352c;
+      --javdan-emerald:#477b58;
+    }
+    body{background:radial-gradient(ellipse at 8% 0%,#e2f0e5 0%,transparent 38%),linear-gradient(145deg,#f4f8f4,#eaf2ec 65%,#f8faf8)!important}
+    .app-sidebar{
+      background:linear-gradient(180deg,#111b16 0%,#1d3024 52%,#315b3d 100%)!important;
+      border-left:3px solid #e7b84f;
+      box-shadow:-14px 0 34px rgba(15,28,20,.2)!important
+    }
+    .sidebar-brand{border-bottom-color:#ffffff24}
+    .sidebar-mark{background:linear-gradient(145deg,#eaf4ec,#9fc5a7)!important;color:#1c3826!important}
+    .sidebar-links a{color:#e7f0e9}
+    .sidebar-links a:hover,.sidebar-links a.active{
+      background:linear-gradient(90deg,#ffffff16,#e7b84f20)!important;
+      box-shadow:inset -3px 0 #e7b84f!important
+    }
+    .sidebar-footer{background:#101a14a8;border-color:#ffffff25;color:#d5e4d8}
+    .app-hero{
+      background:linear-gradient(118deg,#17231d 0%,#203b2a 48%,#477b58 100%)!important;
+      border:1px solid #527b5b!important;
+      box-shadow:0 16px 38px rgba(19,39,26,.2)!important
+    }
+    .app-hero h2{
+      background:linear-gradient(90deg,#f5f7f3 0%,#e8c875 100%)!important;
+      -webkit-background-clip:text!important;background-clip:text!important;
+      color:transparent!important
+    }
+    .hero-brand{color:#e7c979!important}
+    .hero-role{background:#101a1470!important;border-color:#ffffff38!important}
+    .hero-actions a{background:#f5f8f5!important;color:#24392a!important}
+    .hero-actions a.secondary{background:#101a1466!important;color:#fff!important;border-color:#ffffff45!important}
+    .section-ribbon{color:#294b35}
+    .section-ribbon:before{background:linear-gradient(#243d2b,#e7b84f)!important}
+    .pm-shell{border-color:#cbd9ce!important}
+    .pm-heading h2{color:#243d2b!important}
+    .pm-tab.active{background:linear-gradient(110deg,#203c2a,#548260)!important;border-color:#e0bd69!important;color:#fff!important}
+    .module-top{background:linear-gradient(110deg,#e6f0e8 0%,#f8f6ed 70%,#fff 100%)!important;border-color:#d9dfcf!important}
+    .mobile-app-nav{background:#18251e!important;border-bottom:2px solid #d6b45e!important}
+    .mobile-app-nav a{color:#edf4ee!important}
+    .mobile-app-nav a:active{background:#ffffff18}
+    .btn-primary,button.btn-primary{
+      background:linear-gradient(120deg,#315f40,#5d936b)!important;
+      border:1px solid #477b58!important;color:#fff!important;
+      box-shadow:0 5px 14px rgba(31,72,43,.2)!important
+    }
+    .btn-primary:hover,button.btn-primary:hover{background:linear-gradient(120deg,#244a31,#477b58)!important}
+    .quick-card,.app-folder,.visual-card{
+      border-color:#d5dfd5!important;
+      box-shadow:0 7px 20px rgba(24,43,29,.07),0 2px 0 #e7d7a8 inset!important
+    }
+    .quick-card:hover,.app-folder:hover{border-color:#c9a957!important}
+    @media(max-width:650px){
+      .mobile-app-nav{background:linear-gradient(100deg,#17231d,#294b34)!important}
+      .mobile-app-nav a{color:#f2f6f2!important}
+    }
+
+</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
