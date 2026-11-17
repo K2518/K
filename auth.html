@@ -22,8 +22,20 @@ let mode='login',method='email',step='form';
 const $=id=>document.getElementById(id);
 function msg(t){$('msg').textContent=t;$('msg').style.display='block'}
 function cleanPhone(){return $('phone').value.trim().replace(/[\s()-]/g,'')}
+function cleanEmail(){return $('email').value.trim().toLowerCase()}
+function friendlyAuthError(err){
+ const raw=(err&&err.message)||'',m=raw.toLowerCase();
+ if(m.includes('invalid login credentials'))return 'ایمیل یا رمز عبور اشتباه است.';
+ if(m.includes('email not confirmed'))return 'ایمیل شما هنوز تأیید نشده است. صندوق ورودی و هرزنامه را بررسی کنید.';
+ if(m.includes('user already registered')||m.includes('already been registered'))return 'این ایمیل قبلاً ثبت‌نام کرده است؛ از بخش ورود استفاده کنید.';
+ if(m.includes('password should be at least')||m.includes('password is too short'))return 'رمز عبور کوتاه است؛ حداقل ۶ کاراکتر وارد کنید.';
+ if(m.includes('invalid email'))return 'فرمت ایمیل معتبر نیست؛ نمونه: name@example.com';
+ if(m.includes('rate limit')||m.includes('too many requests'))return 'تعداد درخواست‌ها زیاد شده است. کمی صبر کنید و دوباره تلاش کنید.';
+ if(m.includes('network')||m.includes('fetch'))return 'ارتباط با سرور برقرار نشد. اینترنت را بررسی و دوباره تلاش کنید.';
+ return raw||'عملیات ناموفق بود. دوباره تلاش کنید.';
+}
 function showStep(s){step=s;$('passwordWrap').classList.toggle('hidden',s==='otp'||s==='newpass');$('otpWrap').classList.toggle('hidden',s!=='otp');$('newPasswordWrap').classList.toggle('hidden',s!=='newpass');$('forgotBtn').classList.toggle('hidden',mode!=='login'||s!=='form');$('submitBtn').textContent=s==='otp'?'تأیید کد پیامک':s==='newpass'?'ثبت رمز عبور جدید':mode==='login'?'ورود به حساب': 'ایجاد حساب کاربری'}
-function setMode(m){mode=m;step='form';$('loginTab').classList.toggle('active',m==='login');$('signupTab').classList.toggle('active',m==='signup');$('nameWrap').classList.toggle('hidden',m!=='signup');$('msg').style.display='none';showStep('form')}
+function setMode(m){mode=m;step='form';$('password').minLength=m==='signup'?6:0;$('password').required=true;$('loginTab').classList.toggle('active',m==='login');$('signupTab').classList.toggle('active',m==='signup');$('nameWrap').classList.toggle('hidden',m!=='signup');$('msg').style.display='none';showStep('form')}
 function setMethod(m){method=m;$('emailTab').classList.toggle('active',m==='email');$('phoneTab').classList.toggle('active',m==='phone');$('emailWrap').classList.toggle('hidden',m!=='email');$('phoneWrap').classList.toggle('hidden',m!=='phone');$('email').required=m==='email';$('phone').required=m==='phone';$('password').autocomplete=mode==='login'?'current-password':'new-password';$('msg').style.display='none';showStep('form')}
 $('loginTab').onclick=()=>setMode('login');$('signupTab').onclick=()=>setMode('signup');$('emailTab').onclick=()=>setMethod('email');$('phoneTab').onclick=()=>setMethod('phone');
 async function routeUser(){const {data:{user}}=await sb.auth.getUser();if(!user)return;const {data:p,error}=await sb.from('profiles').select('role,is_active,full_name').eq('user_id',user.id).maybeSingle();if(error){msg('دریافت وضعیت حساب ممکن نشد: '+error.message);return}if(!p){msg('پروفایل حساب هنوز ایجاد نشده است. اگر تازه عضو شده‌اید، پس از تأیید پیامک یا ایمیل دوباره وارد شوید.');return}if(!p.is_active){msg('حساب شما در انتظار تأیید مدیر است.');return}location.replace(p.role==='super_admin'?'admin.html':'index.html')}
@@ -38,18 +50,18 @@ $('authForm').addEventListener('submit',async e=>{e.preventDefault();$('submitBt
  if(step==='newpass'){const {error}=await sb.auth.updateUser({password:$('newPassword').value});if(error)throw error;window.__phoneRecovery=false;msg('رمز عبور جدید ثبت شد. اکنون می‌توانید وارد شوید.');setMode('login');return}
  if(mode==='signup'){
    let result;
-   if(method==='email')result=await sb.auth.signUp({email:$('email').value.trim(),password:$('password').value,options:{data:{full_name:$('fullName').value.trim()}}});
+   if(method==='email')result=await sb.auth.signUp({email:cleanEmail(),password:$('password').value,options:{emailRedirectTo:location.origin+location.pathname,data:{full_name:$('fullName').value.trim()}}});
    else result=await sb.auth.signUp({phone:cleanPhone(),password:$('password').value,options:{data:{full_name:$('fullName').value.trim()}}});
    if(result.error)throw result.error;
    if(method==='phone'&&!result.data.session){window.__phoneRecovery=false;showStep('otp');msg('کد تأیید به شماره شما پیامک شد.');}
    else if(method==='email'&&!result.data.session)msg('ثبت‌نام انجام شد. ایمیل خود را برای تأیید باز کنید؛ سپس وارد شوید. حساب پس از تأیید مدیر فعال می‌شود.');
    else await routeUser();
  }else{
-   const result=method==='email'?await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value}):await sb.auth.signInWithPassword({phone:cleanPhone(),password:$('password').value});
+   const result=method==='email'?await sb.auth.signInWithPassword({email:cleanEmail(),password:$('password').value}):await sb.auth.signInWithPassword({phone:cleanPhone(),password:$('password').value});
    if(result.error)throw result.error;await routeUser();
  }
- }catch(err){msg(err.message||'خطا در ارتباط با سرور')}finally{$('submitBtn').disabled=false}});
-$('forgotBtn').onclick=async()=>{try{if(method==='email'){const email=$('email').value.trim();if(!email){msg('ابتدا ایمیل خود را وارد کنید.');return}const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});if(error)throw error;msg('لینک بازیابی رمز عبور به ایمیل شما ارسال شد. پوشه هرزنامه را هم بررسی کنید.')}else{const phone=cleanPhone();if(!phone){msg('ابتدا شماره موبایل را وارد کنید.');return}const {error}=await sb.auth.signInWithOtp({phone,options:{shouldCreateUser:false}});if(error)throw error;window.__phoneRecovery=true;showStep('otp');msg('کد تأیید برای بازیابی به شماره شما ارسال شد. پس از وارد کردن کد، رمز جدید را تعیین کنید.')}}catch(err){msg(err.message||'ارسال کد بازیابی ناموفق بود')}};
+ }catch(err){msg(friendlyAuthError(err))}finally{$('submitBtn').disabled=false}});
+$('forgotBtn').onclick=async()=>{try{if(method==='email'){const email=cleanEmail();if(!email){msg('ابتدا ایمیل خود را وارد کنید.');return}const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});if(error)throw error;msg('لینک بازیابی رمز عبور به ایمیل شما ارسال شد. پوشه هرزنامه را هم بررسی کنید.')}else{const phone=cleanPhone();if(!phone){msg('ابتدا شماره موبایل را وارد کنید.');return}const {error}=await sb.auth.signInWithOtp({phone,options:{shouldCreateUser:false}});if(error)throw error;window.__phoneRecovery=true;showStep('otp');msg('کد تأیید برای بازیابی به شماره شما ارسال شد. پس از وارد کردن کد، رمز جدید را تعیین کنید.')}}catch(err){msg(friendlyAuthError(err))}};
 let recoveryPending = location.hash.includes('type=recovery') || new URLSearchParams(location.search).get('type')==='recovery';
 sb.auth.onAuthStateChange((event)=>{if(event==='PASSWORD_RECOVERY'){recoveryPending=true;showStep('newpass');msg('رمز عبور جدید خود را تعیین کنید.')}});
 sb.auth.getSession().then(({data})=>{if(data.session&&!recoveryPending)routeUser()});
