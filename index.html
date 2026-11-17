@@ -5451,6 +5451,8 @@
   if (!state.uiThemeVersion) { state.theme = 'light'; state.uiThemeVersion = 1; }
   state.pm = Object.assign({manager:'', start:'', finish:'', budget:0, actualCost:0, physical:0, tasks:[], risks:[], milestones:[], reports:[]}, state.pm || {});
   ['tasks','risks','milestones','reports'].forEach(k => { if (!Array.isArray(state.pm[k])) state.pm[k] = []; });
+  // Make the project-management state available before cloud callbacks can run.
+  const pm = state.pm;
   function saveState() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
     catch (err) { console.error(err); alert('ذخیره‌سازی مرورگر انجام نشد؛ فضای ذخیره‌سازی را بررسی کنید.'); }
@@ -6092,7 +6094,6 @@
   initTheme(); renderProgress(); renderChecklist(); updateProgressBars(); renderNotebook();
 
   // JAVDAN V8.0 - Online pastel workspace
-  const pm = state.pm;
   const pmToday = () => { const d=new Date(); return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10); };
   const pmFmt = n => Number(n||0).toLocaleString('fa-IR');
   const pmVal = (form, name) => (new FormData(form).get(name) || '').toString().trim();
