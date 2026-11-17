@@ -1,0 +1,18 @@
+{
+  "id": "./",
+  "name": "جاودان سازه | JAVDAN SAZEH",
+  "short_name": "جاودان سازه",
+  "description": "سامانه هوشمند مدیریت و کنترل پروژه‌های عمرانی",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "./auth.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#f2f8f3",
+  "theme_color": "#244b36",
+  "icons": [
+    {"src": "./assets/javdan-app-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
+  ]
+}
