@@ -5515,7 +5515,6 @@
       projects=[created];
     }
     sel.innerHTML=projects.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.name||'پروژه بدون نام')+'</option>').join('');
-    await loadCloudProject(projects[0]);
     sel.onchange=async()=>{const id=sel.value;const row=projects.find(p=>p.id===id);if(row){clearTimeout(cloudSaveTimer);if(cloudProjectId)await saveCloudWorkspace();await loadCloudProject(row);}};
     document.getElementById('cloud-new-project').onclick=async()=>{
       const name=prompt('نام پروژه جدید را وارد کنید:');if(!name||!name.trim())return;
@@ -5576,8 +5575,11 @@
         await loadCloudProject(created);
         setCloudStatus('✓ پروژه آزمایشی ساخته و بارگذاری شد؛ اطلاعات آن ساختگی است.');
         alert('پروژه آزمایشی ساخته شد. از بخش مدیریت پروژه، چک‌لیست، نمودارها و خروجی‌ها را بررسی کن.');
-      }catch(err){console.error('Demo project creation failed',err);alert('ساخت پروژه آزمایشی ناموفق بود: '+(err.message||'خطای نامشخص'));}
+      }catch(err){console.error('Demo project creation failed',err);setCloudStatus('ساخت پروژه آزمایشی ناموفق بود: '+(err.message||'خطای نامشخص'),true);alert('ساخت پروژه آزمایشی ناموفق بود: '+(err.message||'خطای نامشخص'));}
     };
+    // Bind all cloud actions before loading the initially selected project.
+    try{await loadCloudProject(projects[0]);}
+    catch(loadError){console.error('Initial cloud project load failed:',loadError);setCloudStatus('فهرست پروژه‌ها دریافت شد، اما بارگذاری پروژه انتخاب‌شده ناموفق بود: '+(loadError.message||''),true);}
   }
   window.javdanInitCloudProjects=async(client,user)=>{cloudClient=client;cloudUser=user;await initCloudProjects();};
 
@@ -6198,14 +6200,14 @@
   try{await window.javdanInitCloudProjects(sb,user);}
   catch(cloudError){
    console.error('JAVDAN cloud initialization failed:',cloudError);
-   const status=document.getElementById('cloud-status');
-   if(status)status.textContent='اتصال ابری برقرار نشد؛ بخش‌های محلی برنامه همچنان در دسترس هستند. '+(cloudError.message||'');
+   const status=document.getElementById('cloud-sync-status');
+   if(status){status.textContent='اتصال ابری برقرار نشد؛ '+(cloudError.message||'خطای نامشخص');status.style.color='var(--error)';}
   }
  }catch(e){
   console.error('JAVDAN authentication initialization failed:',e);
   showApp();
-  const status=document.getElementById('cloud-status');
-  if(status)status.textContent='خطا در بررسی حساب کاربری: '+(e.message||'لطفاً صفحه را دوباره بارگذاری کنید.');
+  const status=document.getElementById('cloud-sync-status');
+  if(status){status.textContent='خطا در بررسی حساب کاربری: '+(e.message||'لطفاً صفحه را دوباره بارگذاری کنید.');status.style.color='var(--error)';}
  }
 })();
 </script>
