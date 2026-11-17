@@ -5451,8 +5451,8 @@
   if (!state.uiThemeVersion) { state.theme = 'light'; state.uiThemeVersion = 1; }
   state.pm = Object.assign({manager:'', start:'', finish:'', budget:0, actualCost:0, physical:0, tasks:[], risks:[], milestones:[], reports:[]}, state.pm || {});
   ['tasks','risks','milestones','reports'].forEach(k => { if (!Array.isArray(state.pm[k])) state.pm[k] = []; });
-  // Make the project-management state available before cloud callbacks can run.
-  const pm = state.pm;
+  // var is intentionally used here to avoid temporal-dead-zone errors in cloud callbacks.
+  var pm = state.pm;
   function saveState() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
     catch (err) { console.error(err); alert('ذخیره‌سازی مرورگر انجام نشد؛ فضای ذخیره‌سازی را بررسی کنید.'); }
@@ -5484,6 +5484,7 @@
     const savedPm=state.pm||{};
     Object.assign(pmRef,{manager:'',start:'',finish:'',budget:0,actualCost:0,physical:0,tasks:[],risks:[],milestones:[],reports:[]},savedPm);
     state.pm=pmRef;
+    pm=pmRef;
     localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
     document.getElementById('project-name').value=state.project||'';
     document.getElementById('client-name').value=state.client||'';
