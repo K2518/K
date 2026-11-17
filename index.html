@@ -668,6 +668,7 @@
       <label for="cloud-project-select">پروژه‌های حساب کاربری (ذخیره ابری)</label>
       <select id="cloud-project-select"><option value="">در حال بارگذاری پروژه‌ها…</option></select>
       <button type="button" id="cloud-new-project" class="btn-ghost" style="margin-top:.45rem">＋ ایجاد پروژه مستقل</button>
+      <button type="button" id="cloud-demo-project" class="btn-primary" style="margin-top:.45rem">✦ ساخت پروژه آزمایشی کامل</button>
       <small id="cloud-sync-status" style="display:block;margin-top:.35rem;color:var(--text-muted)">در انتظار اتصال امن به فضای ابری</small>
     </div>
     <div class="control-card">
@@ -5522,6 +5523,60 @@
       const {data:created,error:createError}=await cloudClient.from('projects').insert({name:name.trim(),created_by:cloudUser.id,project_data:fresh}).select('id,name,client_name,project_data,created_at').single();
       if(createError){alert('ایجاد پروژه انجام نشد: '+createError.message);return;}
       projects.push(created);const opt=document.createElement('option');opt.value=created.id;opt.textContent=created.name;sel.appendChild(opt);await loadCloudProject(created);
+    };
+    document.getElementById('cloud-demo-project').onclick=async()=>{
+      const demoName='پروژه آزمایشی جاودان — ساختمان ۵ طبقه';
+      if(!confirm('یک پروژه آزمایشی مستقل با اطلاعات ساختگی ایجاد شود؟\\nپروژه‌های فعلی شما تغییر نمی‌کنند.'))return;
+      const day=(offset)=>{const d=new Date();d.setDate(d.getDate()+offset);return d.toISOString().slice(0,10);};
+      const demoPhases=JSON.parse(JSON.stringify(BASE_PHASES));
+      const demoChecks={};let itemNo=0;
+      const walk=(items,parentKey)=>{(items||[]).forEach((item,index)=>{if(typeof item==='string'){if(itemNo%3!==1)demoChecks['chk-'+hashId(parentKey+'/'+index+'/'+item)]=true;itemNo++;}else if(item&&Array.isArray(item.items))walk(item.items,parentKey+'/'+index);});};
+      demoPhases.forEach(p=>walk(p.items,p.id));
+      const demoState={
+        ...state,project:demoName,client:'شرکت توسعه سازه نمونه',date:day(0),projectType:'midrise',userRole:'nazer',phaseFilter:'all',
+        checks:demoChecks,evidence:{},notebook:[
+          {date:day(-2),text:'بازدید اولیه کارگاه و کنترل حصارکشی و تابلوهای ایمنی انجام شد.'},
+          {date:day(-1),text:'نتایج آزمایش خاک و نقشه‌های اجرایی برای تطبیق دریافت شد.'},
+          {date:day(0),text:'نمونه آزمایشی برای بررسی امکانات سامانه؛ اطلاعات ساختگی است.'}
+        ],
+        checklistData:demoPhases,
+        pm:{
+          manager:'مهندس رضایی',start:day(-45),finish:day(135),budget:48500000000,actualCost:17200000000,physical:38,
+          tasks:[
+            {id:'demo-t1',title:'تحویل زمین و تجهیز کارگاه',owner:'سرپرست کارگاه',phase:'پیش‌نیازها',start:day(-45),due:day(-40),weight:8,progress:100,status:'done'},
+            {id:'demo-t2',title:'گودبرداری و پایدارسازی جداره',owner:'پیمانکار خاکبرداری',phase:'خاکی',start:day(-38),due:day(-25),weight:15,progress:100,status:'done'},
+            {id:'demo-t3',title:'اجرای بتن مگر و آرماتوربندی فونداسیون',owner:'تیم سازه',phase:'فونداسیون',start:day(-24),due:day(-8),weight:18,progress:75,status:'progress'},
+            {id:'demo-t4',title:'قالب‌بندی و بتن‌ریزی فونداسیون',owner:'پیمانکار سازه',phase:'فونداسیون',start:day(-10),due:day(3),weight:14,progress:35,status:'progress'},
+            {id:'demo-t5',title:'آماده‌سازی ستون‌های طبقه همکف',owner:'تیم آرماتوربند',phase:'اسکلت',start:day(1),due:day(15),weight:15,progress:0,status:'todo'},
+            {id:'demo-t6',title:'کنترل مسیر عبور تأسیسات',owner:'مهندس تأسیسات',phase:'تأسیسات',start:day(-5),due:day(5),weight:8,progress:20,status:'blocked'}
+          ],
+          risks:[
+            {id:'demo-r1',title:'احتمال آب‌گرفتگی موضعی در گود',kind:'ریسک',prob:4,impact:4,owner:'سرپرست کارگاه',due:day(2),action:'بازبینی پمپ تخلیه و مسیر هدایت آب'},
+            {id:'demo-r2',title:'تأخیر در تأمین میلگرد سایز ۲۰',kind:'مانع اجرایی',prob:3,impact:4,owner:'تدارکات',due:day(4),action:'پیگیری سفارش جایگزین و کنترل موجودی'},
+            {id:'demo-r3',title:'نیاز به اصلاح کاور آرماتور در یک ناحیه',kind:'عدم انطباق',prob:2,impact:3,owner:'ناظر سازه',due:day(1),action:'اصلاح اسپیسرها و ثبت عکس قبل از بتن‌ریزی'}
+          ],
+          milestones:[
+            {id:'demo-m1',title:'تحویل و تجهیز کارگاه',planned:day(-40),actual:day(-41),status:'done'},
+            {id:'demo-m2',title:'اتمام گودبرداری',planned:day(-25),actual:day(-24),status:'done'},
+            {id:'demo-m3',title:'اتمام فونداسیون',planned:day(8),actual:'',status:'todo'},
+            {id:'demo-m4',title:'اتمام اسکلت',planned:day(65),actual:'',status:'todo'}
+          ],
+          reports:[
+            {id:'demo-d1',date:day(-2),workers:18,weather:'نیمه‌ابری',equipment:'بیل مکانیکی، پمپ آب، کامیون',summary:'ادامه آرماتوربندی فونداسیون محورهای A تا C؛ کنترل کاور و فاصله خاموت‌ها انجام شد. یک مورد اصلاح اسپیسر ثبت شد.'},
+            {id:'demo-d2',date:day(-1),workers:22,weather:'آفتابی',equipment:'جرثقیل، ویبراتور، پمپ بتن',summary:'قالب‌بندی ضلع شرقی تکمیل شد. بتن‌ریزی آزمایشی در برنامه فردا قرار گرفت. تأمین میلگرد سایز ۲۰ نیازمند پیگیری است.'},
+            {id:'demo-d3',date:day(0),workers:20,weather:'صاف',equipment:'پمپ بتن، ویبراتور، ژنراتور',summary:'کنترل نهایی آرماتور و قالب در محدوده فونداسیون؛ پیش از بتن‌ریزی، تأیید ناظر و ثبت مستندات الزامی است.'}
+          ]
+        }
+      };
+      try{
+        const {data:created,error:createError}=await cloudClient.from('projects').insert({name:demoName,client_name:demoState.client,created_by:cloudUser.id,project_data:demoState}).select('id,name,client_name,project_data,created_at').single();
+        if(createError)throw createError;
+        projects.push(created);
+        const opt=document.createElement('option');opt.value=created.id;opt.textContent=created.name;sel.appendChild(opt);
+        await loadCloudProject(created);
+        setCloudStatus('✓ پروژه آزمایشی ساخته و بارگذاری شد؛ اطلاعات آن ساختگی است.');
+        alert('پروژه آزمایشی ساخته شد. از بخش مدیریت پروژه، چک‌لیست، نمودارها و خروجی‌ها را بررسی کن.');
+      }catch(err){console.error('Demo project creation failed',err);alert('ساخت پروژه آزمایشی ناموفق بود: '+(err.message||'خطای نامشخص'));}
     };
   }
   window.javdanInitCloudProjects=async(client,user)=>{cloudClient=client;cloudUser=user;await initCloudProjects();};
