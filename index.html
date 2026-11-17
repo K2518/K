@@ -5510,7 +5510,7 @@
   }
   async function initCloudProjects(){
     const sel=document.getElementById('cloud-project-select');
-    const {data:rows,error}=await cloudClient.from('projects').select('id,name,client_name,project_data,created_at').order('created_at',{ascending:true});
+    const {data:rows,error}=await cloudClient.from('projects').select('id,name,client_name,project_data,created_at').eq('is_archived',false).order('created_at',{ascending:true});
     if(error)throw error;
     let projects=rows||[];
     if(!projects.length){
