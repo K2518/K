@@ -1,11 +1,13 @@
 -- JAVDAN: private projects until Super Admin approval
 -- Run once in Supabase Dashboard > SQL Editor.
 
--- Existing projects stay approved; all projects created after this migration default to private.
+-- Mark all current projects private so none are exposed before your review.
+-- Projects created after this migration also default to private.
 alter table public.projects
-  add column if not exists is_approved boolean not null default true;
+  add column if not exists is_approved boolean not null default false;
 alter table public.projects
   alter column is_approved set default false;
+update public.projects set is_approved = false;
 
 -- Owners can continue working on their own private projects.
 -- Project members can access a project only after the Super Admin approves it.
