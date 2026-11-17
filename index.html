@@ -498,6 +498,28 @@
   </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+/* JAVDAN project analytics and client-ready reporting */
+.pm-analytics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+.pm-analytics-card{background:linear-gradient(145deg,#fff,#f3f8f4);border:1px solid #dce9df;border-radius:16px;padding:15px;min-width:0}
+.pm-analytics-card h4{margin:0 0 10px;color:#315e40;font-size:.88rem}
+.pm-chart-row{display:grid;grid-template-columns:minmax(70px,1fr) 2fr auto;gap:8px;align-items:center;margin:9px 0;font-size:.72rem;color:#607a67}
+.pm-chart-track{height:9px;border-radius:20px;background:#e8f0e9;overflow:hidden}.pm-chart-track span{display:block;height:100%;border-radius:20px;background:linear-gradient(90deg,#9fcaaa,#4b8c5d)}
+.pm-chart-value{font-weight:800;color:#315e40;white-space:nowrap}.pm-analytics-note{font-size:.68rem;color:#829589;margin-top:8px;line-height:1.8}
+.pm-report-actions{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0}.pm-report-actions button{width:auto}
+@media(max-width:700px){.pm-analytics{grid-template-columns:1fr}.pm-chart-row{grid-template-columns:minmax(65px,1fr) 1.5fr auto}}
+@media print{
+ #printable-checklist .report-section{break-inside:avoid;margin:7mm 0}
+ #printable-checklist .report-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm;margin:5mm 0}
+ #printable-checklist .report-kpi{border:1px solid #888;padding:3mm;text-align:center}
+ #printable-checklist .report-kpi strong{display:block;font-size:14pt}
+ #printable-checklist .report-chart{margin:3mm 0}
+ #printable-checklist .report-bar{height:6px;background:#e8eee9;border:1px solid #aaa}
+ #printable-checklist .report-bar span{display:block;height:100%;background:#6c9b76!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ #printable-checklist table{font-size:8pt;margin:3mm 0}
+ #printable-checklist h2{font-size:13pt;border-bottom:1px solid #777;padding-bottom:2mm}
+}
+</style>
 </head>
 <body>
 
@@ -734,6 +756,12 @@
       </div>
       <p class="pm-hint">شاخص‌ها بر اساس اطلاعاتی است که در این فایل ثبت می‌کنید؛ برای برنامه زمان‌بندی مبنا و هزینه واقعی، اطلاعات مستند پروژه را وارد کنید. این ابزار جایگزین کنترل مهندسی، متره یا نرم‌افزار زمان‌بندی تخصصی نیست.</p>
       <div id="pm-alerts"></div>
+      <div class="pm-analytics" id="pm-analytics">
+        <article class="pm-analytics-card"><h4>پیشرفت فازهای چک‌لیست</h4><div id="pm-chart-phases"></div><div class="pm-analytics-note">محاسبه بر اساس آیتم‌های قابل مشاهده و تیک‌های پروژه فعال</div></article>
+        <article class="pm-analytics-card"><h4>وضعیت فعالیت‌های اجرایی</h4><div id="pm-chart-tasks"></div><div class="pm-analytics-note">وضعیت فعالیت‌های ثبت‌شده در برنامه اجرایی</div></article>
+        <article class="pm-analytics-card"><h4>اولویت ریسک‌ها و مسائل</h4><div id="pm-chart-risks"></div><div class="pm-analytics-note">اولویت‌بندی بر اساس حاصل‌ضرب احتمال در شدت اثر</div></article>
+        <article class="pm-analytics-card"><h4>کنترل بودجه</h4><div id="pm-chart-budget"></div><div class="pm-analytics-note">مقایسه هزینه واقعی ثبت‌شده با بودجه مصوب</div></article>
+      </div>
     </div>
     <div class="pm-pane" id="pm-pane-tasks">
       <h3>ثبت فعالیت و برنامه اجرایی</h3>
@@ -786,6 +814,7 @@
         <div style="grid-column:1/-1"><label>فعالیت‌های انجام‌شده، مشکلات و دستورکار فردا</label><textarea name="summary" required placeholder="شرح عملیات، محل اجرا، مقدار کار، توقف‌ها، حوادث و تصمیم‌های لازم..."></textarea></div>
         <div><button class="btn-primary" type="submit">ثبت گزارش روزانه</button></div>
       </form>
+      <div class="pm-report-actions"><button class="btn-primary" type="button" id="pm-export-report-xlsx">⬇ خروجی جامع اکسل پروژه</button><button class="btn-ghost" type="button" id="pm-print-report">▤ گزارش مدیریتی / ذخیره PDF</button></div>
       <div class="pm-table-wrap" id="pm-report-list"></div>
     </div>
     <div class="pm-pane" id="pm-pane-backup">
@@ -5970,6 +5999,52 @@
     document.getElementById('pm-risk-list').innerHTML=pmTable(['شرح','نوع','احتمال × شدت','امتیاز','مسئول','مهلت','اقدام','عملیات'],risks.map(r=>{const score=Number(r.prob)*Number(r.impact);return `<tr><td>${esc(r.title)}</td><td>${esc(r.kind)}</td><td>${r.prob} × ${r.impact}</td><td><span class="pm-status ${score>=15?'late':score>=8?'progress':'done'}">${score}</span></td><td>${esc(r.owner||'-')}</td><td>${esc(r.due||'-')}</td><td>${esc(r.action||'-')}</td><td><button class="btn-sm" data-pm-del="risk" data-id="${r.id}">حذف</button></td></tr>`;}));
     document.getElementById('pm-milestone-list').innerHTML=pmTable(['نقطه عطف','تاریخ برنامه‌ای','تاریخ واقعی','وضعیت','عملیات'],milestones.map(m=>`<tr><td>${esc(m.title)}</td><td>${esc(m.planned)}</td><td>${esc(m.actual||'-')}</td><td>${m.status==='done'?'تحقق‌یافته':'در انتظار'}</td><td><button class="btn-sm" data-pm-del="milestone" data-id="${m.id}">حذف</button></td></tr>`));
     document.getElementById('pm-report-list').innerHTML=pmTable(['تاریخ','نیرو','آب‌وهوا','ماشین‌آلات','گزارش','عملیات'],pm.reports.map(r=>`<tr><td>${esc(r.date)}</td><td>${pmFmt(r.workers)}</td><td>${esc(r.weather||'-')}</td><td>${esc(r.equipment||'-')}</td><td>${esc(r.summary)}</td><td><button class="btn-sm" data-pm-del="report" data-id="${r.id}">حذف</button></td></tr>`));
+    renderPmAnalytics();
+  }
+  function pmReportEscape(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function pmChartRows(items){if(!items.length)return '<div class="pm-empty">داده‌ای برای نمایش ثبت نشده است.</div>';return items.map(x=>'<div class="pm-chart-row"><span>'+esc(x.label)+'</span><div class="pm-chart-track"><span style="width:'+Math.max(0,Math.min(100,x.pct))+'%"></span></div><strong class="pm-chart-value">'+esc(x.value)+'</strong></div>').join('');}
+  function renderPmAnalytics(){
+    const phaseHost=document.getElementById('pm-chart-phases');if(!phaseHost)return;
+    const cp=getChecklistProgress();
+    phaseHost.innerHTML=pmChartRows(cp.phases.map(p=>({label:p.title,pct:p.pct,value:p.pct+'٪'})));
+    const statusMap=[['تکمیل‌شده','done'],['در حال اجرا','progress'],['شروع‌نشده','todo'],['متوقف','blocked']];
+    const tasks=pm.tasks||[], taskTotal=tasks.length||0;
+    document.getElementById('pm-chart-tasks').innerHTML=pmChartRows(statusMap.map(([label,key])=>{const n=tasks.filter(t=>t.status===key).length;return {label,pct:taskTotal?n/taskTotal*100:0,value:n+' مورد'};}));
+    const risks=pm.risks||[], bands=[['بحرانی (۱۵ تا ۲۵)',15,25],['متوسط (۸ تا ۱۴)',8,14],['پایین (۱ تا ۷)',1,7]];
+    document.getElementById('pm-chart-risks').innerHTML=pmChartRows(bands.map(([label,min,max])=>{const n=risks.filter(r=>Number(r.prob)*Number(r.impact)>=min&&Number(r.prob)*Number(r.impact)<=max).length;return {label,pct:risks.length?n/risks.length*100:0,value:n+' مورد'};}));
+    const budget=Number(pm.budget)||0,actual=Number(pm.actualCost)||0,spent=budget?Math.min(100,actual/budget*100):0;
+    document.getElementById('pm-chart-budget').innerHTML=budget?'<div class="pm-chart-row"><span>مصرف بودجه</span><div class="pm-chart-track"><span style="width:'+spent+'%"></span></div><strong class="pm-chart-value">'+Math.round(actual/budget*100)+'٪</strong></div><div class="pm-analytics-note">بودجه: '+pmFmt(budget)+' تومان · هزینه واقعی: '+pmFmt(actual)+' تومان · مانده: '+pmFmt(budget-actual)+' تومان</div>':'<div class="pm-empty">برای نمایش نمودار، بودجه مصوب را وارد کنید.</div>';
+  }
+  function exportProjectExcel(){
+    if(!window.XLSX){alert('کتابخانه اکسل بارگذاری نشده است؛ اتصال اینترنت را بررسی کنید.');return;}
+    const cp=getChecklistProgress(), checklist=collectChecklistRows(), tasks=pm.tasks||[],risks=pm.risks||[],milestones=pm.milestones||[],reports=pm.reports||[];
+    const meta=[['گزارش جامع پروژه | جاودان سازه'],['پروژه',state.project||''],['کارفرما',state.client||''],['مدیر پروژه',pm.manager||''],['تاریخ شروع',pm.start||''],['تاریخ پایان',pm.finish||''],['تاریخ تهیه گزارش',new Date().toLocaleDateString('fa-IR')],['پیشرفت چک‌لیست (%)',cp.pct],['تعداد کنترل تکمیل‌شده',cp.done],['کل کنترل‌ها',cp.total],['پیشرفت وزنی فعالیت‌ها (%)',tasks.length?Math.round(tasks.reduce((a,t)=>a+(Number(t.weight)||0)*(Number(t.progress)||0),0)/Math.max(1,tasks.reduce((a,t)=>a+(Number(t.weight)||0),0))):0],['بودجه مصوب (تومان)',Number(pm.budget)||0],['هزینه واقعی (تومان)',Number(pm.actualCost)||0],['پیشرفت فیزیکی اعلامی (%)',Number(pm.physical)||0]];
+    const wb=XLSX.utils.book_new();
+    const addSheet=(name,rows,widths)=>{const ws=XLSX.utils.aoa_to_sheet(rows);ws['!rtl']=true;if(widths)ws['!cols']=widths.map(w=>({wch:w}));if(rows.length>1)ws['!autofilter']={ref:'A1:'+String.fromCharCode(64+rows[0].length)+rows.length};XLSX.utils.book_append_sheet(wb,ws,name);};
+    addSheet('خلاصه پروژه',meta, [34,48]);
+    addSheet('پیشرفت فازها',[['فاز','کل کنترل‌ها','تکمیل‌شده','درصد پیشرفت'],...cp.phases.map(p=>[p.title,p.total,p.done,p.pct])],[32,18,18,18]);
+    addSheet('چک‌لیست فنی',[['فاز','زیرعنوان','شرح کنترل','وضعیت','شواهد / توضیحات'],...checklist.map(x=>[x.phase,x.section,x.item,x.status,x.evidence])],[28,26,65,18,45]);
+    addSheet('فعالیت‌ها',[['فعالیت','مسئول','فاز','شروع','موعد','وزن','پیشرفت','وضعیت'],...tasks.map(t=>[t.title,t.owner,t.phase,t.start,t.due,t.weight,t.progress,({todo:'شروع‌نشده',progress:'در حال اجرا',done:'تکمیل‌شده',blocked:'متوقف'}[t.status]||t.status)])],[40,22,20,15,15,12,12,18]);
+    addSheet('ریسک‌ها',[['شرح','نوع','احتمال','شدت','امتیاز','مسئول','مهلت','اقدام'],...risks.map(x=>[x.title,x.kind,x.prob,x.impact,Number(x.prob)*Number(x.impact),x.owner,x.due,x.action])],[40,18,12,12,12,22,15,45]);
+    addSheet('نقاط عطف',[['عنوان','تاریخ برنامه‌ای','تاریخ واقعی','وضعیت'],...milestones.map(x=>[x.title,x.planned,x.actual,x.status==='done'?'تحقق‌یافته':'در انتظار'])],[40,18,18,18]);
+    addSheet('گزارش روزانه',[['تاریخ','تعداد نیرو','آب‌وهوا','ماشین‌آلات','شرح گزارش'],...reports.map(x=>[x.date,x.workers,x.weather,x.equipment,x.summary])],[16,14,20,28,75]);
+    XLSX.writeFile(wb,'JAVDAN-Project-Report-'+pmToday()+'.xlsx');
+  }
+  function prepareProjectReportPrint(){
+    const cp=getChecklistProgress(),checklist=collectChecklistRows(),tasks=pm.tasks||[],risks=pm.risks||[],milestones=pm.milestones||[],reports=pm.reports||[];
+    const root=document.getElementById('printable-checklist'),e=pmReportEscape;
+    const table=(headers,rows)=>'<table><thead><tr>'+headers.map(h=>'<th>'+e(h)+'</th>').join('')+'</tr></thead><tbody>'+(rows.length?rows.map(row=>'<tr>'+row.map(v=>'<td>'+e(v)+'</td>').join('')+'</tr>').join(''):'<tr><td colspan="'+headers.length+'">موردی ثبت نشده است.</td></tr>')+'</tbody></table>';
+    const taskProgress=tasks.length?Math.round(tasks.reduce((a,t)=>a+(Number(t.weight)||0)*(Number(t.progress)||0),0)/Math.max(1,tasks.reduce((a,t)=>a+(Number(t.weight)||0),0))):0;
+    root.innerHTML='<h1>گزارش مدیریتی پروژه | جاودان سازه</h1><div class="print-meta"><div>پروژه: '+e(state.project)+'</div><div>کارفرما: '+e(state.client)+'</div><div>مدیر پروژه: '+e(pm.manager)+'</div><div>تاریخ تهیه: '+e(new Date().toLocaleDateString('fa-IR'))+'</div><div>شروع مبنا: '+e(pm.start)+'</div><div>پایان مبنا: '+e(pm.finish)+'</div></div>'+
+    '<div class="report-kpis"><div class="report-kpi">پیشرفت چک‌لیست<strong>'+cp.pct+'٪</strong></div><div class="report-kpi">پیشرفت وزنی فعالیت‌ها<strong>'+taskProgress+'٪</strong></div><div class="report-kpi">فعالیت‌های ثبت‌شده<strong>'+tasks.length+'</strong></div><div class="report-kpi">ریسک‌های ثبت‌شده<strong>'+risks.length+'</strong></div><div class="report-kpi">بودجه مصوب<strong>'+e(pmFmt(pm.budget))+'</strong></div><div class="report-kpi">هزینه واقعی<strong>'+e(pmFmt(pm.actualCost))+'</strong></div></div>'+
+    '<section class="report-section"><h2>۱. وضعیت پیشرفت فازها</h2>'+table(['فاز','کل کنترل‌ها','تکمیل‌شده','درصد پیشرفت'],cp.phases.map(p=>[p.title,p.total,p.done,p.pct+'٪']))+'</section>'+
+    '<section class="report-section"><h2>۲. فعالیت‌های اجرایی</h2>'+table(['فعالیت','مسئول','فاز','موعد','پیشرفت','وضعیت'],tasks.map(t=>[t.title,t.owner,t.phase,t.due,(t.progress||0)+'٪',({todo:'شروع‌نشده',progress:'در حال اجرا',done:'تکمیل‌شده',blocked:'متوقف'}[t.status]||t.status)]))+'</section>'+
+    '<section class="report-section"><h2>۳. ریسک‌ها و مسائل</h2>'+table(['شرح','نوع','امتیاز','مسئول','مهلت','اقدام'],risks.map(x=>[x.title,x.kind,Number(x.prob)*Number(x.impact),x.owner,x.due,x.action]))+'</section>'+
+    '<section class="report-section"><h2>۴. نقاط عطف</h2>'+table(['عنوان','تاریخ برنامه‌ای','تاریخ واقعی','وضعیت'],milestones.map(x=>[x.title,x.planned,x.actual,x.status==='done'?'تحقق‌یافته':'در انتظار']))+'</section>'+
+    '<section class="report-section"><h2>۵. گزارش‌های روزانه</h2>'+table(['تاریخ','نیرو','آب‌وهوا','ماشین‌آلات','شرح گزارش'],reports.map(x=>[x.date,x.workers,x.weather,x.equipment,x.summary]))+'</section>'+
+    '<section class="report-section"><h2>۶. خلاصه چک‌لیست فنی</h2>'+table(['فاز','زیرعنوان','شرح کنترل','وضعیت','شواهد'],checklist.map(x=>[x.phase,x.section,x.item,x.status,x.evidence]))+'</section>'+
+    '<p style="font-size:8pt;margin-top:8mm">این گزارش بر اساس داده‌های ثبت‌شده در سامانه تهیه شده و به‌تنهایی جایگزین تأیید مهندس مسئول، صورت‌جلسه یا مستندات رسمی پروژه نیست.</p>';
+    window.print();
   }
   function pmBindForm(id,key,fields){document.getElementById(id).addEventListener('submit',e=>{e.preventDefault();const f=e.currentTarget;const obj={id:'pm-'+Date.now()};fields.forEach(k=>obj[k]=pmVal(f,k));if(key==='tasks'){obj.weight=Number(obj.weight||0);obj.progress=Math.max(0,Math.min(100,Number(obj.progress)||0));if(obj.progress===100)obj.status='done';}if(key==='risks'){obj.prob=Number(obj.prob);obj.impact=Number(obj.impact);}if(key==='reports')obj.workers=Number(obj.workers||0);pm[key].unshift(obj);f.reset();if(key==='tasks'){f.elements.weight.value=1;f.elements.progress.value=0;}if(key==='reports'){f.elements.date.value=pmToday();f.elements.workers.value=0;}pmSave();pmRender();});}
   pmBindForm('pm-task-form','tasks',['title','owner','phase','start','due','weight','status','progress']);
@@ -5983,6 +6058,8 @@
   document.getElementById('pm-csv').addEventListener('click',()=>{const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const rows=[['فعالیت','مسئول','فاز','شروع','موعد','وضعیت','پیشرفت','وزن'],...pm.tasks.map(t=>[t.title,t.owner,t.phase,t.start,t.due,t.status,t.progress,t.weight])];pmDownload('javdan-tasks-'+pmToday()+'.csv','\ufeff'+rows.map(r=>r.map(q).join(',')).join('\r\n'),'text/csv;charset=utf-8');});
   document.getElementById('pm-import-file').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||typeof imported!=='object'||!imported.pm||!Array.isArray(imported.pm.tasks))throw new Error('ساختار فایل پشتیبان معتبر نیست');if(!confirm('اطلاعات فعلی با نسخه پشتیبان جایگزین شود؟'))return;state=imported;state.pm=Object.assign({tasks:[],risks:[],milestones:[],reports:[]},state.pm);saveState();alert('نسخه پشتیبان بازیابی شد. صفحه را دوباره بارگذاری کنید.');}catch(err){alert('بازیابی انجام نشد: '+err.message);}finally{e.target.value='';}});
   pmInitFields();pmRender();
+  document.getElementById('pm-export-report-xlsx').addEventListener('click',exportProjectExcel);
+  document.getElementById('pm-print-report').addEventListener('click',prepareProjectReportPrint);
   window.__javdanPmRef=pm;window.__javdanPmRender=pmRender;
 
 </script>
