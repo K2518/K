@@ -88,9 +88,28 @@ drop policy if exists "projects_update_managers" on public.projects;
 create policy "projects_update_managers" on public.projects
 for update to authenticated
 using (public.can_manage_project(id))
-with check (
-  public.can_manage_project(id)
-  and (is_approved = false or public.is_super_admin())
-);
+with check (public.can_manage_project(id));
+
+-- Publication status itself is reserved for the Super Admin, even when a project
+-- manager can edit the rest of an approved project's data.
+create or replace function public.guard_project_approval_change()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $
+begin
+  if new.is_approved is distinct from old.is_approved
+     and not public.is_super_admin() then
+    raise exception 'Only the Super Admin can approve or unpublish projects';
+  end if;
+  return new;
+end;
+$;
+
+drop trigger if exists guard_project_approval_change on public.projects;
+create trigger guard_project_approval_change
+before update of is_approved on public.projects
+for each row execute function public.guard_project_approval_change();
 
 -- The existing projects_read_accessible policy continues to use can_access_project().
