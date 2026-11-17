@@ -7,7 +7,7 @@ alter table public.projects
   add column if not exists is_approved boolean not null default false;
 alter table public.projects
   alter column is_approved set default false;
-update public.projects set is_approved = false;
+
 
 -- Owners can continue working on their own private projects.
 -- Project members can access a project only after the Super Admin approves it.
@@ -99,7 +99,7 @@ returns trigger
 language plpgsql
 security definer
 set search_path = public
-as $
+as $$
 begin
   if new.is_approved is distinct from old.is_approved
      and not public.is_super_admin() then
@@ -107,7 +107,7 @@ begin
   end if;
   return new;
 end;
-$;
+$$;
 
 drop trigger if exists guard_project_approval_change on public.projects;
 create trigger guard_project_approval_change
