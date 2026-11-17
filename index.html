@@ -5343,7 +5343,7 @@
     try { state = JSON.parse(localStorage.getItem('javdan-v6.3') || localStorage.getItem('javdan-v6.2') || null); } catch (_) { state = null; }
   }
   state = Object.assign({
-    checks: {}, evidence: {}, project: '', client: '', date: '', theme: 'light', projectType: 'villa', userRole: 'nazer',
+    checks: {}, evidence: {}, project: '', client: '', date: '', theme: 'light', projectType: 'villa', userRole: 'nazer', phaseFilter: 'all',
     checklistData: JSON.parse(JSON.stringify(BASE_PHASES)), notebook: [], pm: { manager:'', start:'', finish:'', budget:0, actualCost:0, physical:0, tasks:[], risks:[], milestones:[], reports:[] }
   }, state || {});
   // Add newly published supplemental form checks to existing local projects without touching their saved data.
@@ -5397,6 +5397,7 @@
     document.getElementById('visit-date').value=state.date||'';
     document.getElementById('project-type').value=state.projectType||'villa';
     document.getElementById('user-role').value=state.userRole||'nazer';
+    const phaseFilterEl=document.getElementById('phase-filter');if(phaseFilterEl)phaseFilterEl.value=state.phaseFilter||'all';
     const map={'pm-manager':'manager','pm-start':'start','pm-finish':'finish','pm-budget':'budget','pm-actual-cost':'actualCost','pm-physical':'physical'};
     Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.value=pmRef[key]??'';});
     renderProgress();renderChecklist(currentFilter());updateProgressBars();renderNotebook();
@@ -5427,7 +5428,7 @@
     sel.onchange=async()=>{const id=sel.value;const row=projects.find(p=>p.id===id);if(row){clearTimeout(cloudSaveTimer);if(cloudProjectId)await saveCloudWorkspace();await loadCloudProject(row);}};
     document.getElementById('cloud-new-project').onclick=async()=>{
       const name=prompt('نام پروژه جدید را وارد کنید:');if(!name||!name.trim())return;
-      const fresh={...state,project:name.trim(),client:'',date:'',checks:{},evidence:{},notebook:[],pm:{manager:'',start:'',finish:'',budget:0,actualCost:0,physical:0,tasks:[],risks:[],milestones:[],reports:[]},checklistData:JSON.parse(JSON.stringify(BASE_PHASES))};
+      const fresh={...state,project:name.trim(),client:'',date:'',phaseFilter:'all',checks:{},evidence:{},notebook:[],pm:{manager:'',start:'',finish:'',budget:0,actualCost:0,physical:0,tasks:[],risks:[],milestones:[],reports:[]},checklistData:JSON.parse(JSON.stringify(BASE_PHASES))};
       const {data:created,error:createError}=await cloudClient.from('projects').insert({name:name.trim(),created_by:cloudUser.id,project_data:fresh}).select('id,name,client_name,project_data,created_at').single();
       if(createError){alert('ایجاد پروژه انجام نشد: '+createError.message);return;}
       projects.push(created);const opt=document.createElement('option');opt.value=created.id;opt.textContent=created.name;sel.appendChild(opt);await loadCloudProject(created);
@@ -5492,7 +5493,7 @@
 
   function hashId(s) { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-  function currentFilter() { return document.getElementById('phase-filter').value || 'all'; }
+  function currentFilter() { return state.phaseFilter || document.getElementById('phase-filter').value || 'all'; }
 
   // Rendering works on the full stored arrays and keeps the original index of every item,
   // so add/delete always act on the right entry even when some items are hidden by project type.
@@ -5759,7 +5760,8 @@
     if (state.notebook.length > 100) state.notebook.pop(); saveState(); renderNotebook(); alert('✅ گزارش روزانه ثبت شد.');
   });
   document.getElementById('notebook-toggle').addEventListener('click', toggleNotebook);
-  document.getElementById('phase-filter').addEventListener('change', e => renderChecklist(e.target.value));
+  document.getElementById('phase-filter').value = state.phaseFilter || 'all';
+  document.getElementById('phase-filter').addEventListener('change', e => { state.phaseFilter = e.target.value || 'all'; saveState(); renderChecklist(state.phaseFilter); });
   document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if(e.target===o) closeModal(o.id); }));
 
 
