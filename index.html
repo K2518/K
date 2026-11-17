@@ -2,6 +2,19 @@
 <html lang="fa" dir="rtl" data-theme="light">
 <head>
   <meta charset="UTF-8">
+    <meta name="theme-color" content="#244b36">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="جاودان سازه">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="./assets/javdan-app-icon.svg">
+  <link rel="apple-touch-icon" href="data:image/png;base64,${ICON_B64}">
+  <script>
+    if ("serviceWorker" in navigator && location.protocol === "https:") {
+      window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(err => console.warn("PWA service worker:", err)));
+    }
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>سامانه هوشمند کنترل و مدیریت پروژه | جاودان V8.0 آنلاین</title>
   <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
@@ -783,6 +796,108 @@ html[data-theme="light"] .btn-primary{background:#78a88a!important;color:#fff!im
 }
 </style>
 
+<style id="javdan-theme-final-v2">
+/* Theme layer v2: final cascade for all app surfaces on desktop and iPhone */
+html[data-theme="light"]{
+ color-scheme:light;
+ --void:#f2f8f3;--deep:#fff;--surface:#e7f1e9;--paper:#fff;
+ --border:#d5e1d9;--border-hover:#b8ccbf;
+ --text-primary:#263a30;--text-secondary:#62786b;--text-muted:#82958a;
+ --signal:#78a88a;--signal-hover:#5f9273;--signal-glow:rgba(120,168,138,.2);
+ --success:#5e9d72;--warning:#c59b57;--error:#c96d70;
+}
+html[data-theme="dark"]{
+ color-scheme:dark;
+ --void:#0b1410;--deep:#111e17;--surface:#1b2b21;--paper:#17251c;
+ --border:#304638;--border-hover:#496b54;
+ --text-primary:#edf5ef;--text-secondary:#b5c9ba;--text-muted:#91a99a;
+ --signal:#82b995;--signal-hover:#a0d0ad;--signal-glow:rgba(130,185,149,.22);
+ --success:#75c28d;--warning:#e7b75f;--error:#ef8585;
+ --shadow:0 8px 26px rgba(0,0,0,.28);
+}
+html[data-theme="light"] body{
+ background:radial-gradient(ellipse at 12% 0%,#e2f0e5 0%,transparent 38%),linear-gradient(145deg,#f7fbf7,#edf5ef 65%,#f8faf8)!important;
+ color:#263a30!important;
+}
+html[data-theme="dark"] body{
+ background:radial-gradient(ellipse at 12% 0%,rgba(54,100,68,.22),transparent 38%),linear-gradient(145deg,#0b1410,#101d15 65%,#0c1711)!important;
+ color:#edf5ef!important;
+}
+html[data-theme="dark"] .control-card,
+html[data-theme="dark"] .progress-card,
+html[data-theme="dark"] .phase,
+html[data-theme="dark"] .sub-accordion,
+html[data-theme="dark"] .logbook-section,
+html[data-theme="dark"] .pm-shell,
+html[data-theme="dark"] .pm-kpi,
+html[data-theme="dark"] .pm-pane,
+html[data-theme="dark"] .pm-analytics-card,
+html[data-theme="dark"] .quick-card,
+html[data-theme="dark"] .app-folder,
+html[data-theme="dark"] .visual-card,
+html[data-theme="dark"] .reg-library-card,
+html[data-theme="dark"] .log-card,
+html[data-theme="dark"] .evidence-card,
+html[data-theme="dark"] .notebook-card{
+ background:#111e17!important;color:#edf5ef!important;
+ border-color:#304638!important;box-shadow:0 8px 26px rgba(0,0,0,.28)!important;
+}
+html[data-theme="dark"] .phase-header,
+html[data-theme="dark"] .sub-header,
+html[data-theme="dark"] .pm-tab,
+html[data-theme="dark"] .pm-status,
+html[data-theme="dark"] .pm-chart-track,
+html[data-theme="dark"] .module-top{
+ background:#1b2b21!important;color:#edf5ef!important;border-color:#304638!important;
+}
+html[data-theme="dark"] .pm-heading h2,
+html[data-theme="dark"] .quick-title,
+html[data-theme="dark"] .section-ribbon,
+html[data-theme="dark"] .pm-analytics-card h4,
+html[data-theme="dark"] .pm-chart-value{color:#dcebe0!important}
+html[data-theme="dark"] .pm-chart-row,
+html[data-theme="dark"] .pm-analytics-note,
+html[data-theme="dark"] .pm-hint,
+html[data-theme="dark"] .filter-hint{color:#b5c9ba!important}
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea{
+ background:#142219!important;color:#edf5ef!important;border-color:#304638!important;
+}
+html[data-theme="dark"] button:not(.hero-actions a),
+html[data-theme="dark"] .btn-ghost,
+html[data-theme="dark"] .btn-sm,
+html[data-theme="dark"] .pm-actions button{
+ background-color:#1b2b21!important;color:#edf5ef!important;border-color:#496b54!important;
+}
+html[data-theme="dark"] .btn-primary,
+html[data-theme="dark"] button.btn-primary,
+html[data-theme="dark"] #theme-toggle{
+ background:linear-gradient(120deg,#315f40,#5d936b)!important;color:#fff!important;border-color:#6eaa7d!important;
+}
+html[data-theme="dark"] .app-hero{
+ background:linear-gradient(118deg,#101d15 0%,#203b2a 48%,#477b58 100%)!important;
+}
+html[data-theme="dark"] .mobile-app-nav,
+html[data-theme="dark"] .app-sidebar{background:linear-gradient(180deg,#101d15,#1c3927 60%,#294b35)!important}
+html[data-theme="dark"] .site-banner{background:#101d15!important}
+html[data-theme="dark"] .site-banner img{filter:brightness(.78) saturate(.9)}
+html[data-theme="dark"] h1,html[data-theme="dark"] h2,html[data-theme="dark"] h3,
+html[data-theme="dark"] h4,html[data-theme="dark"] strong,html[data-theme="dark"] label,
+html[data-theme="dark"] p,html[data-theme="dark"] small,html[data-theme="dark"] span,
+html[data-theme="dark"] li,html[data-theme="dark"] td,html[data-theme="dark"] th{color:inherit}
+html[data-theme="dark"] .app-hero h2,html[data-theme="dark"] .app-hero p,
+html[data-theme="dark"] .app-hero .hero-brand,html[data-theme="dark"] .app-hero .hero-role{color:#f1f7f2!important}
+html[data-theme="light"] .app-hero{background:linear-gradient(120deg,#173d2b 0%,#326348 58%,#8eb49a 100%)!important}
+html[data-theme="light"] .mobile-app-nav,
+html[data-theme="light"] .app-sidebar{background:linear-gradient(180deg,#111b16 0%,#1d3024 52%,#315b3d 100%)!important}
+#theme-toggle{min-height:42px;touch-action:manipulation;cursor:pointer}
+@media(max-width:700px){
+ html[data-theme="dark"] .control-card,html[data-theme="dark"] .progress-card,
+ html[data-theme="dark"] .phase,html[data-theme="dark"] .sub-accordion,
+ html[data-theme="dark"] .pm-shell{background:#111e17!important;color:#edf5ef!important}
+}
+</style>
 </head>
 <body>
 
@@ -5833,9 +5948,16 @@ html[data-theme="light"] .btn-primary{background:#78a88a!important;color:#fff!im
   function applyTheme(theme) {
     const next = theme === 'dark' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', next);
+    document.documentElement.style.colorScheme = next;
     state.theme = next;
     const toggle = document.getElementById('theme-toggle');
-    if (toggle) toggle.innerHTML = next === 'dark' ? '☀️ تم روشن' : '🌙 تم تیره';
+    if (toggle) {
+      toggle.innerHTML = next === 'dark' ? '☀️ تم روشن' : '🌙 تم تیره';
+      toggle.setAttribute('aria-pressed', next === 'dark' ? 'true' : 'false');
+      toggle.setAttribute('title', next === 'dark' ? 'تغییر به تم روشن' : 'تغییر به تم تیره');
+    }
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeMeta) themeMeta.setAttribute('content', next === 'dark' ? '#101d15' : '#244b36');
     try { localStorage.setItem(THEME_KEY, next); } catch (err) { console.warn('Theme preference could not be saved', err); }
   }
   function initTheme() {
@@ -6464,5 +6586,7 @@ html[data-theme="light"] .btn-primary{background:#78a88a!important;color:#fff!im
  }
 })();
 </script>
+
+<!-- iOS install guidance is intentionally available on the login page, not as a blocking prompt. -->
 </body>
 </html>
