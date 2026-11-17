@@ -5736,6 +5736,7 @@
     if (totalEl) totalEl.textContent = stats.pct + '%';
     if (totalBar) totalBar.style.width = stats.pct + '%';
     renderDashboardCharts();
+    if(typeof renderPmAnalytics==='function')renderPmAnalytics();
   }
 
   // MODAL
