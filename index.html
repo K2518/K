@@ -5500,9 +5500,11 @@
   async function loadCloudProject(row){
     cloudProjectId=row.id;
     const data=row.project_data&&typeof row.project_data==='object'?row.project_data:{};
+    const activeTheme=document.documentElement.getAttribute('data-theme')||'light';
     Object.assign(state,data);
     state.project=row.name||state.project||'';state.client=row.client_name||state.client||'';
     refreshWorkspaceAfterCloudLoad();
+    applyTheme(activeTheme);
     document.getElementById('cloud-project-select').value=row.id;
     setCloudStatus('✓ پروژه از فضای ابری بارگذاری شد.');
   }
@@ -5524,7 +5526,7 @@
       const fresh={...state,project:name.trim(),client:'',date:'',phaseFilter:'all',checks:{},evidence:{},notebook:[],pm:{manager:'',start:'',finish:'',budget:0,actualCost:0,physical:0,tasks:[],risks:[],milestones:[],reports:[]},checklistData:JSON.parse(JSON.stringify(BASE_PHASES))};
       const {data:created,error:createError}=await cloudClient.from('projects').insert({name:name.trim(),created_by:cloudUser.id,project_data:fresh}).select('id,name,client_name,project_data,created_at').single();
       if(createError){alert('ایجاد پروژه انجام نشد: '+createError.message);return;}
-      projects.push(created);const opt=document.createElement('option');opt.value=created.id;opt.textContent=created.name;sel.appendChild(opt);await loadCloudProject(created);
+      projects.push(created);const opt=document.createElement('option');opt.value=created.id;opt.textContent=created.name+' · خصوصی تا تأیید مدیر';sel.appendChild(opt);await loadCloudProject(created);setCloudStatus('پروژه ساخته شد و تا زمان تأیید مدیر فقط برای شما و مدیر ارشد قابل مشاهده است.');
     };
     document.getElementById('cloud-demo-project').onclick=async()=>{
       const demoName='پروژه آزمایشی جاودان — ساختمان ۵ طبقه';
@@ -5574,9 +5576,9 @@
         const {data:created,error:createError}=await cloudClient.from('projects').insert({name:demoName,client_name:demoState.client,created_by:cloudUser.id,project_data:demoState}).select('id,name,client_name,project_data,created_at').single();
         if(createError)throw createError;
         projects.push(created);
-        const opt=document.createElement('option');opt.value=created.id;opt.textContent=created.name;sel.appendChild(opt);
+        const opt=document.createElement('option');opt.value=created.id;opt.textContent=created.name+' · خصوصی تا تأیید مدیر';sel.appendChild(opt);
         await loadCloudProject(created);
-        setCloudStatus('✓ پروژه آزمایشی ساخته و بارگذاری شد؛ اطلاعات آن ساختگی است.');
+        setCloudStatus('✓ پروژه آزمایشی ساخته شد؛ تا زمان تأیید مدیر خصوصی می‌ماند.');
         alert('پروژه آزمایشی ساخته شد. از بخش مدیریت پروژه، چک‌لیست، نمودارها و خروجی‌ها را بررسی کن.');
       }catch(err){console.error('Demo project creation failed',err);setCloudStatus('ساخت پروژه آزمایشی ناموفق بود: '+(err.message||'خطای نامشخص'),true);alert('ساخت پروژه آزمایشی ناموفق بود: '+(err.message||'خطای نامشخص'));}
     };
@@ -5587,14 +5589,23 @@
   window.javdanInitCloudProjects=async(client,user)=>{cloudClient=client;cloudUser=user;await initCloudProjects();};
 
   // THEME
+  const THEME_KEY = 'javdan-theme-v1';
+  function applyTheme(theme) {
+    const next = theme === 'dark' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    state.theme = next;
+    const toggle = document.getElementById('theme-toggle');
+    if (toggle) toggle.innerHTML = next === 'dark' ? '☀️ تم روشن' : '🌙 تم تیره';
+    try { localStorage.setItem(THEME_KEY, next); } catch (err) { console.warn('Theme preference could not be saved', err); }
+  }
   function initTheme() {
-    document.documentElement.setAttribute('data-theme', state.theme || 'light');
-    document.getElementById('theme-toggle').innerHTML = (state.theme || 'light') === 'dark' ? '☀️ تم روشن' : '🌙 تم تیره';
+    let savedTheme = '';
+    try { savedTheme = localStorage.getItem(THEME_KEY) || ''; } catch (_) {}
+    applyTheme(savedTheme || state.theme || 'light');
   }
   document.getElementById('theme-toggle').addEventListener('click', () => {
     const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next); state.theme = next;
-    document.getElementById('theme-toggle').innerHTML = next === 'dark' ? '☀️ تم روشن' : '🌙 تم تیره';
+    applyTheme(next);
     saveState();
   });
 
