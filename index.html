@@ -581,6 +581,12 @@
 
   <div class="section-ribbon">اطلاعات پایه و مشخصات پروژه</div>
   <div class="controls">
+    <div class="control-card" id="cloud-project-control">
+      <label for="cloud-project-select">پروژه‌های حساب کاربری (ذخیره ابری)</label>
+      <select id="cloud-project-select"><option value="">در حال بارگذاری پروژه‌ها…</option></select>
+      <button type="button" id="cloud-new-project" class="btn-ghost" style="margin-top:.45rem">＋ ایجاد پروژه مستقل</button>
+      <small id="cloud-sync-status" style="display:block;margin-top:.35rem;color:var(--text-muted)">در انتظار اتصال امن به فضای ابری</small>
+    </div>
     <div class="control-card">
       <label>نام پروژه</label>
       <input type="text" id="project-name" placeholder="مثال: برج آفتاب">
@@ -5324,6 +5330,7 @@
 
 
   const STORAGE_KEY = 'javdan-v7.0';
+  let cloudClient = null, cloudUser = null, cloudProjectId = null, cloudSaveTimer = null, cloudSaveBusy = false;
   let state;
   try {
     state = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
@@ -5356,7 +5363,77 @@
   function saveState() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
     catch (err) { console.error(err); alert('ذخیره‌سازی مرورگر انجام نشد؛ فضای ذخیره‌سازی را بررسی کنید.'); }
+    scheduleCloudSave();
   }
+  function setCloudStatus(message, isError=false) {
+    const el=document.getElementById('cloud-sync-status');
+    if(el){el.textContent=message;el.style.color=isError?'var(--error)':'var(--text-muted)';}
+  }
+  function scheduleCloudSave(){
+    if(!cloudClient||!cloudUser||!cloudProjectId)return;
+    clearTimeout(cloudSaveTimer);
+    setCloudStatus('تغییرات ثبت شد؛ همگام‌سازی در حال انجام…');
+    cloudSaveTimer=setTimeout(saveCloudWorkspace,900);
+  }
+  async function saveCloudWorkspace(){
+    if(!cloudClient||!cloudUser||!cloudProjectId||cloudSaveBusy)return;
+    cloudSaveBusy=true;
+    try{
+      const payload=JSON.parse(JSON.stringify(state));
+      const {error}=await cloudClient.from('projects').update({name:state.project||'پروژه بدون نام',client_name:state.client||null,project_data:payload,updated_at:new Date().toISOString()}).eq('id',cloudProjectId);
+      if(error)throw error;
+      setCloudStatus('✓ ذخیره ابری انجام شد · '+new Date().toLocaleTimeString('fa-IR'));
+    }catch(err){console.error('Cloud save failed',err);setCloudStatus('ذخیره ابری ناموفق؛ اتصال و دسترسی پروژه را بررسی کنید. '+(err.message||''),true);}
+    finally{cloudSaveBusy=false;}
+  }
+  function refreshWorkspaceAfterCloudLoad(){
+    const pmRef=window.__javdanPmRef||state.pm;
+    const savedPm=state.pm||{};
+    Object.assign(pmRef,{manager:'',start:'',finish:'',budget:0,actualCost:0,physical:0,tasks:[],risks:[],milestones:[],reports:[]},savedPm);
+    state.pm=pmRef;
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+    document.getElementById('project-name').value=state.project||'';
+    document.getElementById('client-name').value=state.client||'';
+    document.getElementById('visit-date').value=state.date||'';
+    document.getElementById('project-type').value=state.projectType||'villa';
+    document.getElementById('user-role').value=state.userRole||'nazer';
+    const map={'pm-manager':'manager','pm-start':'start','pm-finish':'finish','pm-budget':'budget','pm-actual-cost':'actualCost','pm-physical':'physical'};
+    Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.value=pmRef[key]??'';});
+    renderProgress();renderChecklist(currentFilter());updateProgressBars();renderNotebook();
+    if(window.__javdanPmRender)window.__javdanPmRender();
+  }
+  async function loadCloudProject(row){
+    cloudProjectId=row.id;
+    const data=row.project_data&&typeof row.project_data==='object'?row.project_data:{};
+    Object.assign(state,data);
+    state.project=row.name||state.project||'';state.client=row.client_name||state.client||'';
+    refreshWorkspaceAfterCloudLoad();
+    document.getElementById('cloud-project-select').value=row.id;
+    setCloudStatus('✓ پروژه از فضای ابری بارگذاری شد.');
+  }
+  async function initCloudProjects(){
+    const sel=document.getElementById('cloud-project-select');
+    const {data:rows,error}=await cloudClient.from('projects').select('id,name,client_name,project_data,created_at').order('created_at',{ascending:true});
+    if(error)throw error;
+    let projects=rows||[];
+    if(!projects.length){
+      const name=state.project||'پروژه اول';
+      const {data:created,error:createError}=await cloudClient.from('projects').insert({name,client_name:state.client||null,created_by:cloudUser.id,project_data:JSON.parse(JSON.stringify(state))}).select('id,name,client_name,project_data,created_at').single();
+      if(createError)throw createError;
+      projects=[created];
+    }
+    sel.innerHTML=projects.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.name||'پروژه بدون نام')+'</option>').join('');
+    await loadCloudProject(projects[0]);
+    sel.onchange=async()=>{const id=sel.value;const row=projects.find(p=>p.id===id);if(row){if(cloudProjectId)await saveCloudWorkspace();await loadCloudProject(row);}};
+    document.getElementById('cloud-new-project').onclick=async()=>{
+      const name=prompt('نام پروژه جدید را وارد کنید:');if(!name||!name.trim())return;
+      const fresh={...state,project:name.trim(),client:'',date:'',checks:{},evidence:{},notebook:[],pm:{manager:'',start:'',finish:'',budget:0,actualCost:0,physical:0,tasks:[],risks:[],milestones:[],reports:[]},checklistData:JSON.parse(JSON.stringify(BASE_PHASES))};
+      const {data:created,error:createError}=await cloudClient.from('projects').insert({name:name.trim(),created_by:cloudUser.id,project_data:fresh}).select('id,name,client_name,project_data,created_at').single();
+      if(createError){alert('ایجاد پروژه انجام نشد: '+createError.message);return;}
+      projects.push(created);const opt=document.createElement('option');opt.value=created.id;opt.textContent=created.name;sel.appendChild(opt);await loadCloudProject(created);
+    };
+  }
+  window.javdanInitCloudProjects=async(client,user)=>{cloudClient=client;cloudUser=user;await initCloudProjects();};
 
   // THEME
   function initTheme() {
@@ -5900,6 +5977,7 @@
   document.getElementById('pm-csv').addEventListener('click',()=>{const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const rows=[['فعالیت','مسئول','فاز','شروع','موعد','وضعیت','پیشرفت','وزن'],...pm.tasks.map(t=>[t.title,t.owner,t.phase,t.start,t.due,t.status,t.progress,t.weight])];pmDownload('javdan-tasks-'+pmToday()+'.csv','\ufeff'+rows.map(r=>r.map(q).join(',')).join('\r\n'),'text/csv;charset=utf-8');});
   document.getElementById('pm-import-file').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||typeof imported!=='object'||!imported.pm||!Array.isArray(imported.pm.tasks))throw new Error('ساختار فایل پشتیبان معتبر نیست');if(!confirm('اطلاعات فعلی با نسخه پشتیبان جایگزین شود؟'))return;state=imported;state.pm=Object.assign({tasks:[],risks:[],milestones:[],reports:[]},state.pm);saveState();alert('نسخه پشتیبان بازیابی شد. صفحه را دوباره بارگذاری کنید.');}catch(err){alert('بازیابی انجام نشد: '+err.message);}finally{e.target.value='';}});
   pmInitFields();pmRender();
+  window.__javdanPmRef=pm;window.__javdanPmRender=pmRender;
 
 </script>
 <script>
@@ -5913,6 +5991,7 @@
  const roleEl=document.getElementById('hero-role');if(roleEl)roleEl.textContent=roleNames[p.role]||'عضو جاودان سازه';
  const greeting=document.getElementById('hero-greeting');if(greeting)greeting.textContent='خوش آمدید'+(p.full_name?'، '+p.full_name:'');
  const subtitle=document.getElementById('hero-subtitle');if(subtitle)subtitle.textContent='فضای کاری شما آماده است؛ پروژه‌ها، کنترل فنی و گزارش‌های اجرایی را از همین‌جا مدیریت کنید.';
+ await window.javdanInitCloudProjects(sb,user);
  document.body.classList.add('auth-ready');
 }catch(e){location.replace('auth.html');}})();
 </script>
