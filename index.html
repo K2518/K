@@ -898,6 +898,20 @@ html[data-theme="light"] .app-sidebar{background:linear-gradient(180deg,#111b16 
  html[data-theme="dark"] .pm-shell{background:#111e17!important;color:#edf5ef!important}
 }
 </style>
+<style id="javdan-checklist-touch-fix">
+#checklist-container .check-item{position:relative}
+#checklist-container .check-item input[type="checkbox"]{
+  position:relative;z-index:2;display:inline-block!important;
+  width:22px!important;height:22px!important;min-width:22px;
+  margin:2px 0!important;opacity:1!important;visibility:visible!important;
+  pointer-events:auto!important;accent-color:#4f9162;cursor:pointer;
+  -webkit-appearance:auto;appearance:auto;touch-action:manipulation;
+}
+#checklist-container .check-item .item-text{cursor:pointer;pointer-events:auto}
+#checklist-container .check-item .item-actions{position:relative;z-index:1}
+#update-panel.module-view{display:none}
+#update-panel.module-view.active{display:block}
+</style>
 </head>
 <body>
 
@@ -1100,7 +1114,8 @@ html[data-theme="light"] .app-sidebar{background:linear-gradient(180deg,#111b16 
     @media(max-width:480px){.reg-library-card{min-height:125px}}
   </style>
 
-  <section class="control-card" id="update-panel" style="margin-bottom:1.2rem;">
+  <section class="control-card module-view" id="update-panel" style="margin-bottom:1.2rem;">
+    <div class="module-top"><div><h2>🌐 منابع، اتصال اینترنت و مرکز به‌روزرسانی</h2><p>بررسی اتصال، دریافت اطلاعیه‌ها و مدیریت منبع به‌روزرسانی سامانه</p></div><a class="module-back" href="#app-home">← بازگشت به داشبورد</a></div>
     <div style="display:flex;justify-content:space-between;align-items:center;gap:.7rem;flex-wrap:wrap;">
       <strong>🌐 اتصال اینترنت و مرکز به‌روزرسانی</strong>
       <span id="network-status" style="font-size:.75rem;color:var(--text-secondary)">در حال آزمایش اینترنت…</span>
@@ -6150,10 +6165,16 @@ html[data-theme="light"] .app-sidebar{background:linear-gradient(180deg,#111b16 
       if (txt && txt.trim()) addTask(add.dataset.parent, txt.trim());
       return;
     }
-    if (e.target.type === 'checkbox') {
-      state.checks[e.target.dataset.key] = e.target.checked;
-      saveState(); updateProgressBars();
-    }
+  });
+  // Checkbox state is handled on change (not click) so taps on the text label
+  // and touch interactions on iPhone are saved reliably as well.
+  document.getElementById('checklist-container').addEventListener('change', (e) => {
+    const checkbox = e.target.closest('input[type="checkbox"][data-key]');
+    if (!checkbox) return;
+    state.checks[checkbox.dataset.key] = checkbox.checked;
+    saveState();
+    updateProgressBars();
+    renderDashboardCharts();
   });
 
   function containerFor(key) {
@@ -6456,12 +6477,23 @@ html[data-theme="light"] .app-sidebar{background:linear-gradient(180deg,#111b16 
   });
 
   function setWorkspaceRoute(){
-    const technical = location.hash === '#technical-folder' || location.hash === '#checklist-area';
+    const hash = location.hash || '#app-home';
+    const technical = hash === '#technical-folder' || hash === '#checklist-area';
+    const updates = hash === '#update-panel';
     const folder = document.getElementById('technical-folder');
+    const updateFolder = document.getElementById('update-panel');
     if(folder) folder.classList.toggle('active', technical);
-    document.querySelectorAll('.app-sidebar a').forEach(a=>a.classList.toggle('active', technical ? a.getAttribute('href')==='#technical-folder' : a.getAttribute('href')==='#app-home'));
-    if(technical) setTimeout(()=>folder.scrollIntoView({behavior:'smooth',block:'start'}),30);
-    else if(location.hash==='#app-home' || !location.hash) window.scrollTo({top:0,behavior:'smooth'});
+    if(updateFolder) updateFolder.classList.toggle('active', updates);
+    document.querySelectorAll('.app-sidebar a').forEach(a=>{
+      const href=a.getAttribute('href');
+      a.classList.toggle('active',
+        (technical && href==='#technical-folder') ||
+        (updates && href==='#update-panel') ||
+        (!technical && !updates && href==='#app-home'));
+    });
+    if(technical && folder) setTimeout(()=>folder.scrollIntoView({behavior:'smooth',block:'start'}),30);
+    else if(updates && updateFolder) setTimeout(()=>updateFolder.scrollIntoView({behavior:'smooth',block:'start'}),30);
+    else if(hash==='#app-home' || hash==='#pm-workspace' || hash==='#daily-area' || !location.hash) window.scrollTo({top:0,behavior:'smooth'});
   }
   window.addEventListener('hashchange',setWorkspaceRoute);
   setWorkspaceRoute();
